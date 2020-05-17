@@ -33,6 +33,7 @@ class pipeline:
     def JR(self,address):
         jumpTo = address >> 5
         return jumpTo
-        
+
+    #this will be the "main" function basically
     def cycle(self):
         return
