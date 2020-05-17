@@ -1,4 +1,3 @@
-import queue
 
 fileName = "sample_memory_image.txt"
 
@@ -11,4 +10,3 @@ lines = memory.readlines()
 while PC < len(lines):
     print(lines[PC])
     PC += 1
-print(len(lines))

@@ -1,9 +1,38 @@
+import queue
+class pipeline:
+    def __init__(self):
+        self.PC = 0
+
+    #instruction fetch
+    def IF(self):
+        return
+
+    #instruction decode
+    def ID(self):
+        return
+
+    #execute Instruction
+    def EX(self):
+        return
+
+    #memory
+    #load or store from or to memory
+    def MEM(self):
+        return
+
+    #write back instruction
+    #write back to register
+    def WB(self):
+        return
 
 
-def iORrORn():
-    #6 MSB are the opcode
+    def iORrORn(self):
+        #6 MSB are the opcode
+        return
 
-def JR(address):
-    jumpTo = address >> 4
-    jumpTo = jumpTo - 1
-    return jumpTo
+    def JR(self,address):
+        jumpTo = address >> 5
+        return jumpTo
+        
+    def cycle(self):
+        return
