@@ -25,9 +25,9 @@ class CPU:
         bina = "{0:032b}".format(int(self.memory[self.PC],16))
         #hexadecimal
         hexa = hex(inte)
-        print(hexa)
+        #print(hexa)
         #string
-        print(self.memory[self.PC])
+        #print(self.memory[self.PC])
         #saving binary to pipeline
         self.pipeline[1] = bina
         self.PC +=1
