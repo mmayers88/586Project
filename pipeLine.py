@@ -2,17 +2,26 @@
 class CPU:
     pipeline = {1:'x', 2: 'x', 3: 'x', 4: 'x', 5: 'x'}
     PC = 0
-    def __init__(self):
-        self.pipeline[1]='1'
+    def __init__(self, fileName):
+        self.fileName = open(fileName, 'r')
+        self.memory = self.fileName.readlines()
         return      
 
     def printData(self):
         print(self.pipeline)
         print(self.PC)
+        #print(self.memory)
         return
+    
+    def showMEM(self):
+        for line in self.memory:
+            print(line)
 
     #instruction fetch
     def IF(self):
+        self.pipeline[1] = self.memory[self.PC]
+        print(self.memory[self.PC])
+        self.PC +=1
         return
 
     #instruction decode
@@ -45,22 +54,23 @@ class CPU:
     #this will be the "main" function basically
     def cycle(self):
         #IF
+        self.IF()
         #ID
         #EX
         #MEM
         #WB
-        
+
         #increment pipeline
         self.pipeline[5] = self.pipeline[4]
         self.pipeline[4] = self.pipeline[3]
-        self.pipeline[3] = self.pipeline[4]
+        self.pipeline[3] = self.pipeline[2]
         self.pipeline[2] = self.pipeline[1]
         self.pipeline[1] = 'x'
         return
 
 
 def main():
-    test = CPU
+    test = CPU("sample_memory_image.txt")
     #print(test.printData(test))
     test.pipeline[1] = '1'
     test.pipeline[2] = '2'
@@ -68,10 +78,20 @@ def main():
     test.pipeline[4] = '4'
     test.pipeline[5] = '5'
     print(test.pipeline)
-    test.cycle(test)
+    print(test.PC)
+    test.cycle()
     print(test.pipeline)
-    test.cycle(test)
+    print(test.PC)
+    test.cycle()
     print(test.pipeline)
+    print(test.PC)
+    test.cycle()
+    print(test.pipeline)
+    print(test.PC)
+    test.cycle()
+    print(test.pipeline)
+    print(test.PC)
+    #print(test.showMEM())
 
 if __name__ == "__main__":
     main()
