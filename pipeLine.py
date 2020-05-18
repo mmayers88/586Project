@@ -19,8 +19,17 @@ class CPU:
 
     #instruction fetch
     def IF(self):
-        self.pipeline[1] = self.memory[self.PC]
+        #integer
+        inte = int(self.memory[self.PC],16)
+        #binary
+        bina = "{0:032b}".format(int(self.memory[self.PC],16))
+        #hexadecimal
+        hexa = hex(inte)
+        print(hexa)
+        #string
         print(self.memory[self.PC])
+        #saving binary to pipeline
+        self.pipeline[1] = bina
         self.PC +=1
         return
 
