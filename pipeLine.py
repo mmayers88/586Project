@@ -1,6 +1,6 @@
 
 class CPU:
-    pipeline = {1:'x', 2: 'x', 3: 'x', 4: 'x', 5: 'x'}
+    pipeline = {'IF':'x', 'ID': 'x', 'EX': 'x', 'MEM': 'x', 'WB': 'x'}
     PC = 0
     def __init__(self, fileName):
         self.fileName = open(fileName, 'r')
@@ -29,7 +29,7 @@ class CPU:
         #string
         #print(self.memory[self.PC])
         #saving binary to pipeline
-        self.pipeline[1] = bina
+        self.pipeline['IF'] = bina
         self.PC +=1
         return
 
@@ -70,22 +70,22 @@ class CPU:
         #WB
 
         #increment pipeline
-        self.pipeline[5] = self.pipeline[4]
-        self.pipeline[4] = self.pipeline[3]
-        self.pipeline[3] = self.pipeline[2]
-        self.pipeline[2] = self.pipeline[1]
-        self.pipeline[1] = 'x'
+        self.pipeline['WB'] = self.pipeline['MEM']
+        self.pipeline['MEM'] = self.pipeline['EX']
+        self.pipeline['EX'] = self.pipeline['ID']
+        self.pipeline['ID'] = self.pipeline['IF']
+        self.pipeline['IF'] = 'x'
         return
 
 
 def main():
     test = CPU("sample_memory_image.txt")
     #print(test.printData(test))
-    test.pipeline[1] = '1'
-    test.pipeline[2] = '2'
-    test.pipeline[3] = '3'
-    test.pipeline[4] = '4'
-    test.pipeline[5] = '5'
+    test.pipeline['IF'] = {'OPCODE':'i', 'SOR1': 1, 'SOR2': 2, 'DEST': 3, 'Stall': 'N'}
+    test.pipeline['ID'] = '2'
+    test.pipeline['EX'] = '3'
+    test.pipeline['MEM'] = '4'
+    test.pipeline['WB'] = '5'
     print(test.pipeline)
     print(test.PC)
     test.cycle()
