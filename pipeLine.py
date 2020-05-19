@@ -48,16 +48,22 @@ class CPU:
 
     #execute Instruction
     def EX(self):
+        if self.pipeline['EX']['data'] == 'x':
+            return
         return
 
     #memory
     #load or store from or to memory
     def MEM(self):
+        if self.pipeline['MEM']['data'] == 'x':
+            return
         return
 
     #write back instruction
     #write back to register
     def WB(self):
+        if self.pipeline['WB']['data'] == 'x':
+            return
         return
 
 
