@@ -79,12 +79,12 @@ class CPU:
         #increment pipeline
         self.pipeline['WB'] = self.pipeline['MEM']
         self.pipeline['MEM'] = self.pipeline['EX']
-        if self.pipeline['ID']['Stall'] == 'y':
-            self.pipeline['EX'] = 'x'
+        if self.pipeline['ID']['Stall'] == 'Y':
+            self.pipeline['EX'] = {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N'}
             return
         self.pipeline['EX'] = self.pipeline['ID']
         self.pipeline['ID'] = self.pipeline['IF']
-        #self.pipeline['IF'] = 'x'
+        self.pipeline['IF'] = {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N'}
         #IF
         self.IF()
         return
