@@ -14,9 +14,9 @@ class CPU:
         return      
 
     def printData(self):
-        print(self.pipeline)
         print(self.PC)
-        #print(self.memory)
+        for stage in self.pipeline:
+            print(self.pipeline[stage])
         return
     
     def showMEM(self):
@@ -99,21 +99,20 @@ class CPU:
 def main():
     test = CPU("sample_memory_image.txt")
     #print(test.printData(test))
-    print(test.pipeline)
-    print(test.PC)
+
+    print(test.printData())
     test.cycle()
-    print(test.pipeline)
-    print(test.PC)
+
+    print(test.printData())
     test.cycle()
-    print(test.pipeline)
-    print(test.PC)
+
+    print(test.printData())
     test.cycle()
-    print(test.pipeline)
-    print(test.PC)
+
+    print(test.printData())
     test.cycle()
-    print(test.pipeline)
-    print(test.PC)
-    #print(test.showMEM())
+
+    print(test.printData())
     
 
 if __name__ == "__main__":
