@@ -7,10 +7,17 @@ try:
 except:
     sys.exit(os.EX_IOERR) #can't find 'memory' so this returns IO error :p
 
-test = pl.CPU(fileName)
+processor = pl.CPU(fileName)
 
 print(test.printData())
 
+#finite test
 for i in range(10):
-    test.cycle()
-    print(test.printData())
+    processor.cycle()
+    print(processor.printData())
+
+#waiting for halt
+'''
+while processor.cycle() != 'H':
+    continue
+'''

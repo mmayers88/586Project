@@ -1,10 +1,10 @@
 
 class CPU:
-    pipeline = {'IF':{'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N'}, 
-    'ID': {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N'},
-    'EX': {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N'},
-    'MEM': {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N'}, 
-    'WB': {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N'}}
+    pipeline = {'IF':{'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N', 'Type': 'x'}, 
+    'ID': {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N', 'Type': 'x'},
+    'EX': {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N', 'Type': 'x'},
+    'MEM': {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N', 'Type': 'x'}, 
+    'WB': {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N', 'Type': 'x'}}
     PC = 0
     def __init__(self, fileName):
         self.fileName = open(fileName, 'r')
@@ -64,6 +64,8 @@ class CPU:
     def WB(self):
         if self.pipeline['WB']['data'] == 'x':
             return
+        if self.pipeline['WB']['Type'] == 'H':
+            return 'H'
         return
 
 
@@ -79,6 +81,8 @@ class CPU:
     #this will be the "main" function basically
     def cycle(self):
         #WB
+        if self.WB() == 'H':
+            return 'H'
         #MEM
         #EX
         #ID
@@ -87,11 +91,11 @@ class CPU:
         self.pipeline['WB'] = self.pipeline['MEM']
         self.pipeline['MEM'] = self.pipeline['EX']
         if self.pipeline['ID']['Stall'] == 'Y':
-            self.pipeline['EX'] = {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N'}
+            self.pipeline['EX'] = {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N', 'Type': 'x'}
             return
         self.pipeline['EX'] = self.pipeline['ID']
         self.pipeline['ID'] = self.pipeline['IF']
-        self.pipeline['IF'] = {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N'}
+        self.pipeline['IF'] = {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N', 'Type': 'x'}
         #IF
         self.IF()
         return
