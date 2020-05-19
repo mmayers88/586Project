@@ -1,12 +1,16 @@
+import pipeLine as pl 
+import sys,os
 
-fileName = "sample_memory_image.txt"
+try:
+    fileName = sys.argv[1]
+    print(fileName)
+except:
+    sys.exit(os.EX_IOERR) #can't find 'memory' so this returns IO error :p
 
-memory = open(fileName, 'r')
-PC = 0
-lines = memory.readlines()
-#print(lines)
+test = pl.CPU(fileName)
 
+print(test.printData())
 
-while PC < len(lines):
-    print(lines[PC])
-    PC += 1
+for i in range(10):
+    test.cycle()
+    print(test.printData())

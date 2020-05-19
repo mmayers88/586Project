@@ -73,7 +73,8 @@ class CPU:
 
     def JR(self,address):
         jumpTo = address >> 5
-        return jumpTo
+        self.PC = jumpTo
+        return
 
     #this will be the "main" function basically
     def cycle(self):
@@ -98,21 +99,13 @@ class CPU:
 
 def main():
     test = CPU("sample_memory_image.txt")
-    #print(test.printData(test))
+
 
     print(test.printData())
-    test.cycle()
-
-    print(test.printData())
-    test.cycle()
-
-    print(test.printData())
-    test.cycle()
-
-    print(test.printData())
-    test.cycle()
-
-    print(test.printData())
+    
+    for i in range(10):
+        test.cycle()
+        print(test.printData())
     
 
 if __name__ == "__main__":
