@@ -6,6 +6,9 @@ class CPU:
     'MEM': {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N', 'Type': 'x'}, 
     'WB': {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N', 'Type': 'x'}}
     PC = 0
+    #registers 0-31 initialized to 0, Reg[0] will remain 0
+    Reg = [0 for i in range(32)]
+
     def __init__(self, fileName):
         self.fileName = open(fileName, 'r')
         self.memory = self.fileName.readlines()
