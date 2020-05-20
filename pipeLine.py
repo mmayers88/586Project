@@ -18,6 +18,7 @@ class CPU:
 
     def printData(self):
         print(self.PC)
+        print(self.Reg)
         for stage in self.pipeline:
             print(self.pipeline[stage])
         return
