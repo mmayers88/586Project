@@ -8,7 +8,7 @@ class CPU:
     PC = 0
     #registers 0-31 initialized to 0, Reg[0] will remain 0
     Reg = [0 for i in range(32)]
-
+    destRegList = []
     def __init__(self, fileName):
         self.fileName = open(fileName, 'r')
         self.memory = self.fileName.readlines()
