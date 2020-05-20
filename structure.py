@@ -9,7 +9,7 @@ except:
 
 processor = pl.CPU(fileName)
 
-print(test.printData())
+print(processor.printData())
 
 #finite test
 for i in range(10):

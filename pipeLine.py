@@ -1,10 +1,10 @@
 
 class CPU:
-    pipeline = {'IF':{'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N', 'Type': 'x'}, 
-    'ID': {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N', 'Type': 'x'},
-    'EX': {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N', 'Type': 'x'},
-    'MEM': {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N', 'Type': 'x'}, 
-    'WB': {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N', 'Type': 'x'}}
+    pipeline = {'IF':{'data': 'x', 'Type': 'x', 'OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Answer': 'x',  'Stall': 'N'}, 
+    'ID': {'data': 'x', 'Type': 'x', 'OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Answer': 'x',  'Stall': 'N'},
+    'EX': {'data': 'x', 'Type': 'x', 'OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Answer': 'x',  'Stall': 'N'},
+    'MEM': {'data': 'x', 'Type': 'x', 'OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Answer': 'x',  'Stall': 'N'}, 
+    'WB': {'data': 'x', 'Type': 'x', 'OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Answer': 'x',  'Stall': 'N'}}
     PC = 0
     #registers 0-31 initialized to 0, Reg[0] will remain 0
     Reg = [0 for i in range(32)]
@@ -45,7 +45,11 @@ class CPU:
 
     #instruction decode
     def ID(self):
-        #ID must check if destination register is a source
+        #first check Type
+        #check opcode
+        #with opcode information, format sources, destinations and immediates
+
+        #ID must check if source register is a destination
         #if it is, stall
         return
 
@@ -94,11 +98,11 @@ class CPU:
         self.pipeline['WB'] = self.pipeline['MEM']
         self.pipeline['MEM'] = self.pipeline['EX']
         if self.pipeline['ID']['Stall'] == 'Y':
-            self.pipeline['EX'] = {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N', 'Type': 'x'}
+            self.pipeline['EX'] = {'data': 'x', 'Type': 'x', 'OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Answer': 'x',  'Stall': 'N'}
             return
         self.pipeline['EX'] = self.pipeline['ID']
         self.pipeline['ID'] = self.pipeline['IF']
-        self.pipeline['IF'] = {'data': 'x','OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Stall': 'N', 'Type': 'x'}
+        self.pipeline['IF'] = {'data': 'x', 'Type': 'x', 'OPCODE':'x', 'SOR1': 'x', 'SOR2': 'x', 'DEST': 'x', 'Answer': 'x',  'Stall': 'N'}
         #IF
         self.IF()
         return
