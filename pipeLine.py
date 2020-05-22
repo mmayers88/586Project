@@ -17,8 +17,9 @@ class CPU:
         return      
 
     def printData(self):
-        print(self.PC)
-        print(self.Reg)
+        print("PC: ",self.PC)
+        print("Register Contents: ",self.Reg)
+        print("Taken Registers: ",self.destRegList)
         for stage in self.pipeline:
             print(self.pipeline[stage])
         return
@@ -65,7 +66,6 @@ class CPU:
         self.pipeline['ID']['RD']= int(RD,2)
         return
     def decode(self,opInt):
-        print("in decode", opInt)
         if opInt == 17:
             #halt
             self.pipeline['ID']['Type'] = 'H'
@@ -172,9 +172,33 @@ class CPU:
         opInt = "{0:032b}".format(int(self.memory[self.PC],16))
         opInt = opInt[0:6]
         self.decode(int(opInt,2))
+        if self.pipeline['ID']['OPCODE'] == 'HALT':
+            return
+
         #ID must check if source register is a destination
+        if self.pipeline['ID']['OPCODE'] != 'STW':
+            for x in self.destRegList:
+                if self.pipeline['ID']['RS'] == x:
+                    self.pipeline['ID']['Stall'] = 'Y'
+                    print(self.pipeline['ID'])
+                    print("STALL")
+                    return
+        if self.pipeline['ID']['Type'] == 'R':
+            for x in self.destRegList:
+                if self.pipeline['ID']['RT'] == x:
+                    self.pipeline['ID']['Stall'] = 'Y'
+                    print(self.pipeline['ID'])
+                    print("STALL")
+                    return
+        self.pipeline['ID']['Stall'] = 'N'
+        if self.pipeline['ID']['Type'] == 'R':
+            self.destRegList.append(self.pipeline['ID']['RD'])
+        if self.pipeline['ID']['OPCODE'][-1] == 'I' or self.pipeline['ID']['OPCODE'] == 'LDW':
+            self.destRegList.append(self.pipeline['ID']['RT'])
+        if self.pipeline['ID']['OPCODE'] == 'STW':
+            self.destRegList.append(self.pipeline['ID']['RS'])
         #if it is, stall
-        print(self.pipeline['ID'])
+        #print(self.pipeline['ID'])
         return
 
     #execute Instruction
@@ -197,6 +221,7 @@ class CPU:
             return
         if self.pipeline['WB']['Type'] == 'H':
             return 'H'
+        
         return
 
 
