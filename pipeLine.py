@@ -203,15 +203,24 @@ class CPU:
 
     #execute Instruction
     def EX(self):
-        if self.pipeline['EX']['data'] == 'x':
+        if self.pipeline['EX']['data'] == 'x' or self.pipeline['EX']['Type'] == 'H':
             return
         return
 
     #memory
     #load or store from or to memory
     def MEM(self):
-        if self.pipeline['MEM']['data'] == 'x':
+        if self.pipeline['MEM']['data'] == 'x' or self.pipeline['MEM']['Type'] == 'H':
             return
+        if self.pipeline['MEM']['OPCODE'] != 'LDW' or self.pipeline['MEM']['OPCODE'] != 'STW':
+            return
+        #do load or store
+
+        #remove from destination list
+        if self.pipeline['MEM']['OPCODE'] != 'LDW':
+            self.destRegList.remove(self.pipeline['MEM']['RT'])
+        if self.pipeline['MEM']['OPCODE'] != 'STW':
+            self.destRegList.remove(self.pipeline['MEM']['RS'])
         return
 
     #write back instruction
@@ -221,12 +230,18 @@ class CPU:
             return
         if self.pipeline['WB']['Type'] == 'H':
             return 'H'
-        
+        if self.pipeline['WB']['OPCODE'] == 'LDW' or self.pipeline['WB']['OPCODE'] == 'STW' or self.pipeline['WB']['OPCODE'] == 'BZ' or self.pipeline['WB']['OPCODE'] == 'BEQ' or self.pipeline['WB']['OPCODE'] == 'JR':
+            return
+        if self.pipeline['WB']['OPCODE'][-1] == 'I':
+            self.destRegList.remove(self.pipeline['WB']['RT'])
+        else:
+            self.destRegList.remove(self.pipeline['WB']['RD'])
         return
 
 
-    def iORrORn(self):
-        #6 MSB are the opcode
+    def flush(self):
+        self.pipeline['IF'] = {'data': 'x', 'Type': 'x', 'OPCODE':'x', 'RS': 'x', 'RT': 'x', 'RD': 'x', 'IMM':'x', 'Answer': 'x',  'Stall': 'N'}
+        self.pipeline['ID'] = {'data': 'x', 'Type': 'x', 'OPCODE':'x', 'RS': 'x', 'RT': 'x', 'RD': 'x', 'IMM':'x', 'Answer': 'x',  'Stall': 'N'}
         return
 
     def JR(self,address):
