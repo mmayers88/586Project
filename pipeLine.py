@@ -249,6 +249,39 @@ class CPU:
         self.pipeline['ID'] = {'data': 'x', 'Type': 'x', 'OPCODE':'x', 'RS': 'x', 'RT': 'x', 'RD': 'x', 'IMM':'x', 'Answer': 'x',  'Stall': 'N'}
         return
 
+    #EX functions
+    def ADD(self):
+        return
+    def ADDI(self):
+        return
+    def SUB(self):
+        return
+    def SUBI(self):
+        return
+    def MUL(self):
+        return
+    def MULI(self):
+        return
+    def OR(self):
+        return
+    def ORI(self):
+        return
+    def AND(self):
+        return
+    def ANDI(self):
+        return
+    def XOR(self):
+        return
+    def XORI(self):
+        return
+    def LDW(self):
+        return
+    def STW(self):
+        return
+    def BZ(self):
+        return
+    def BEQ(self):
+        return   
     def JR(self,address):
         jumpTo = address >> 2
         self.PC = jumpTo
