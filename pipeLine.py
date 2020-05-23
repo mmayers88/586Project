@@ -166,7 +166,6 @@ class CPU:
                 return
     #instruction decode
     def ID(self):
-        
         if self.pipeline['ID']['data'] == 'x':
             return
         opInt = "{0:032b}".format(int(self.memory[self.PC],16))
@@ -180,14 +179,14 @@ class CPU:
             for x in self.destRegList:
                 if self.pipeline['ID']['RS'] == x:
                     self.pipeline['ID']['Stall'] = 'Y'
-                    print(self.pipeline['ID'])
+                    #print(self.pipeline['ID'])
                     print("STALL")
                     return
         if self.pipeline['ID']['Type'] == 'R':
             for x in self.destRegList:
                 if self.pipeline['ID']['RT'] == x:
                     self.pipeline['ID']['Stall'] = 'Y'
-                    print(self.pipeline['ID'])
+                    #print(self.pipeline['ID'])
                     print("STALL")
                     return
         self.pipeline['ID']['Stall'] = 'N'
@@ -203,8 +202,11 @@ class CPU:
 
     #execute Instruction
     def EX(self):
-        if self.pipeline['EX']['data'] == 'x' or self.pipeline['EX']['Type'] == 'H':
+        if self.pipeline['EX']['data'] == 'x':
             return
+        if self.pipeline['WB']['Type'] == 'H':
+            return 'H'
+        #use opcodes to do different things
         return
 
     #memory
@@ -213,13 +215,12 @@ class CPU:
         if self.pipeline['MEM']['data'] == 'x' or self.pipeline['MEM']['Type'] == 'H':
             return
         if self.pipeline['MEM']['OPCODE'] != 'LDW' or self.pipeline['MEM']['OPCODE'] != 'STW':
+            #only load and stores will do anything this step
             return
         #do load or store
 
         #remove from destination list
-        if self.pipeline['MEM']['OPCODE'] != 'LDW':
-            self.destRegList.remove(self.pipeline['MEM']['RT'])
-        if self.pipeline['MEM']['OPCODE'] != 'STW':
+        if self.pipeline['MEM']['OPCODE'] == 'STW':
             self.destRegList.remove(self.pipeline['MEM']['RS'])
         return
 
@@ -228,9 +229,13 @@ class CPU:
     def WB(self):
         if self.pipeline['WB']['data'] == 'x':
             return
-        if self.pipeline['WB']['Type'] == 'H':
-            return 'H'
-        if self.pipeline['WB']['OPCODE'] == 'LDW' or self.pipeline['WB']['OPCODE'] == 'STW' or self.pipeline['WB']['OPCODE'] == 'BZ' or self.pipeline['WB']['OPCODE'] == 'BEQ' or self.pipeline['WB']['OPCODE'] == 'JR':
+        if self.pipeline['WB']['OPCODE'] == 'STW' or self.pipeline['WB']['OPCODE'] == 'BZ' or self.pipeline['WB']['OPCODE'] == 'BEQ' or self.pipeline['WB']['OPCODE'] == 'JR':
+            #these write nothing back
+            return
+
+        #do write back to register step then clear the register list
+        if self.pipeline['WB']['OPCODE'] == 'LDW':
+            self.destRegList.remove(self.pipeline['WB']['RT'])
             return
         if self.pipeline['WB']['OPCODE'][-1] == 'I':
             self.destRegList.remove(self.pipeline['WB']['RT'])
@@ -245,7 +250,7 @@ class CPU:
         return
 
     def JR(self,address):
-        jumpTo = address >> 5
+        jumpTo = address >> 2
         self.PC = jumpTo
         self.flush
         return
@@ -253,8 +258,7 @@ class CPU:
     #this will be the "main" function basically
     def cycle(self):
         #WB
-        if self.WB() == 'H':
-            return 'H'
+        self.WB()
         #MEM
         #EX
         #ID
