@@ -247,6 +247,7 @@ class CPU:
     def JR(self,address):
         jumpTo = address >> 5
         self.PC = jumpTo
+        self.flush
         return
 
     #this will be the "main" function basically
