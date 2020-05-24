@@ -12,7 +12,7 @@ processor = pl.CPU(fileName)
 print(processor.printData())
 
 #finite test
-for i in range(10):
+for i in range(20):
     processor.cycle()
     print(processor.printData())
 
