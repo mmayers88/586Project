@@ -46,7 +46,7 @@ class CPU:
         return
     def setSource(self,data,Type):
         if Type == 'I':
-            ADDr = "{0:032b}".format(int(self.memory[self.PC],16))
+            ADDr = data
             RS = ADDr[6:11]
             self.pipeline['ID']['RS'] = int(RS,2)
             RT = ADDr[11:16]
@@ -59,7 +59,7 @@ class CPU:
             print(ADDr)
             print(RS, RT, Imm)
             return
-        ADDr = "{0:032b}".format(int(self.memory[self.PC],16))
+        ADDr = data
         RS = ADDr[6:11]
         self.pipeline['ID']['RS'] = int(RS,2)
         RT = ADDr[11:16]
