@@ -56,6 +56,8 @@ class CPU:
                 self.pipeline['ID']['IMM'] = -1 * int(Imm,2)
                 return
             self.pipeline['ID']['IMM'] = int(Imm,2)
+            print(ADDr)
+            print(RS, RT, Imm)
             return
         ADDr = "{0:032b}".format(int(self.memory[self.PC],16))
         RS = ADDr[6:11]
@@ -64,6 +66,8 @@ class CPU:
         self.pipeline['ID']['RT'] = int(RT,2)
         RD = ADDr[16:21]
         self.pipeline['ID']['RD']= int(RD,2)
+        print(ADDr)
+        print(RS, RT, RD)
         return
     def decode(self,opInt):
         if opInt == 17:
@@ -168,7 +172,7 @@ class CPU:
     def ID(self):
         if self.pipeline['ID']['data'] == 'x':
             return
-        opInt = "{0:032b}".format(int(self.memory[self.PC],16))
+        opInt = self.pipeline['ID']['data']
         opInt = opInt[0:6]
         self.decode(int(opInt,2))
         if self.pipeline['ID']['OPCODE'] == 'HALT':
@@ -249,9 +253,13 @@ class CPU:
         self.pipeline['ID'] = {'data': 'x', 'Type': 'x', 'OPCODE':'x', 'RS': 'x', 'RT': 'x', 'RD': 'x', 'IMM':'x', 'Answer': 'x',  'Stall': 'N'}
         return
 
+
     #EX functions
-    def ADD(self):
-        return
+    def ADD(self, RS, RT):
+        #self.pipeline['EX']['Answer'] = self.ADD(self.pipeline['EX']['RS'],self.pipeline['EX']['RT'])
+        answer = RS + RT
+        return answer
+
     def ADDI(self):
         return
     def SUB(self):
