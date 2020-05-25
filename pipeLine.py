@@ -237,11 +237,11 @@ class CPU:
                 self.pipeline['EX']['Answer'] = self.ORI(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
             if self.pipeline['EX']['OPCODE'] == 'XORI':
                 self.pipeline['EX']['Answer'] = self.XORI(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+            '''
             if self.pipeline['EX']['OPCODE'] == 'LDW':
                 self.pipeline['EX']['Answer'] = self.LDW(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
             if self.pipeline['EX']['OPCODE'] == 'STW':
                 self.pipeline['EX']['Answer'] = self.STW(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
-            '''
             if self.pipeline['EX']['OPCODE'] == 'BEQ':
                 self.BEQ(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
             if self.pipeline['EX']['OPCODE'] == 'BZ':
