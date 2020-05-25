@@ -208,9 +208,50 @@ class CPU:
     def EX(self):
         if self.pipeline['EX']['data'] == 'x':
             return
-        if self.pipeline['WB']['Type'] == 'H':
+        if self.pipeline['EX']['Type'] == 'H':
             return 'H'
         #use opcodes to do different things
+        if self.pipeline['WB']['Type'] == 'R':
+            if self.pipeline['EX']['OPCODE'] == 'ADD':
+                self.pipeline['EX']['Answer'] = self.ADD(self.pipeline['EX']['RS'],self.pipeline['EX']['RT'])
+            if self.pipeline['EX']['OPCODE'] == 'SUB':
+                self.pipeline['EX']['Answer'] = self.SUB(self.pipeline['EX']['RS'],self.pipeline['EX']['RT'])
+            if self.pipeline['EX']['OPCODE'] == 'MUL':
+                self.pipeline['EX']['Answer'] = self.MUL(self.pipeline['EX']['RS'],self.pipeline['EX']['RT'])
+            if self.pipeline['EX']['OPCODE'] == 'AND':
+                self.pipeline['EX']['Answer'] = self.AND(self.pipeline['EX']['RS'],self.pipeline['EX']['RT'])
+            if self.pipeline['EX']['OPCODE'] == 'OR':
+                self.pipeline['EX']['Answer'] = self.OR(self.pipeline['EX']['RS'],self.pipeline['EX']['RT'])
+            if self.pipeline['EX']['OPCODE'] == 'XOR':
+                self.pipeline['EX']['Answer'] = self.XOR(self.pipeline['EX']['RS'],self.pipeline['EX']['RT'])
+        else:
+            if self.pipeline['EX']['OPCODE'] == 'ADDI':
+                self.pipeline['EX']['Answer'] = self.ADDI(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+            if self.pipeline['EX']['OPCODE'] == 'SUBI':
+                self.pipeline['EX']['Answer'] = self.SUBI(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+            if self.pipeline['EX']['OPCODE'] == 'MULI':
+                self.pipeline['EX']['Answer'] = self.MULI(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+            if self.pipeline['EX']['OPCODE'] == 'ANDI':
+                self.pipeline['EX']['Answer'] = self.ANDI(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+            if self.pipeline['EX']['OPCODE'] == 'ORI':
+                self.pipeline['EX']['Answer'] = self.ORI(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+            if self.pipeline['EX']['OPCODE'] == 'XORI':
+                self.pipeline['EX']['Answer'] = self.XORI(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+            if self.pipeline['EX']['OPCODE'] == 'LDW':
+                self.pipeline['EX']['Answer'] = self.LDW(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+            if self.pipeline['EX']['OPCODE'] == 'STW':
+                self.pipeline['EX']['Answer'] = self.STW(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+            '''
+            if self.pipeline['EX']['OPCODE'] == 'BEQ':
+                self.BEQ(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+            if self.pipeline['EX']['OPCODE'] == 'BZ':
+                self.BZ(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+            if self.pipeline['EX']['OPCODE'] == 'JR':
+                self.JR(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+            '''
+
+            
+
         return
 
     #memory
@@ -236,6 +277,10 @@ class CPU:
         if self.pipeline['WB']['OPCODE'] == 'STW' or self.pipeline['WB']['OPCODE'] == 'BZ' or self.pipeline['WB']['OPCODE'] == 'BEQ' or self.pipeline['WB']['OPCODE'] == 'JR':
             #these write nothing back
             return
+        if self.pipeline['WB']['Type'] == 'R':
+            self.pipeline['WB']['RD'] = '{0:032b}'.format(self.pipeline['WB']['Answer'])
+        else:
+            self.pipeline['WB']['RT'] = '{0:032b}'.format(self.pipeline['WB']['Answer'])
 
         #do write back to register step then clear the register list
         if self.pipeline['WB']['OPCODE'] == 'LDW':
@@ -270,18 +315,46 @@ class CPU:
         return
     def MULI(self):
         return
-    def OR(self):
-        return
-    def ORI(self):
-        return
-    def AND(self):
-        return
-    def ANDI(self):
-        return
-    def XOR(self):
-        return
-    def XORI(self):
-        return
+    def OR(self, RS, RT):
+        RS = int(RS, 2)
+        RT = int(RT, 2)
+        Answer = RS | RT
+        return Answer
+
+
+    def ORI(self, RS, IMM):
+        RS = int(RS, 2)
+        IMM = int(IMM, 2)
+        Answer = RS | IMM
+        return Answer
+
+
+    def AND(self, RS, RT):
+        RS = int(RS, 2)
+        RT = int(RT, 2)
+        Answer = RS & RT
+        return Answer
+
+
+    def ANDI(self, RS, IMM):
+        RS = int(RS, 2)
+        IMM = int(IMM, 2)
+        Answer = RS & IMM
+        return Answer
+
+
+    def XOR(self, RS, RT):
+        RS = int(RS, 2)
+        RT = int(RT, 2)
+        Answer = RS ^ RT
+        return Answer
+
+
+    def XORI(self, RS, IMM):
+        RS = int(RS, 2)
+        IMM = int(IMM, 2)
+        Answer = RS ^IMM
+        return Answer
     def LDW(self):
         return
     def STW(self):
