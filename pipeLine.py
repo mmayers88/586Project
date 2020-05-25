@@ -211,7 +211,7 @@ class CPU:
         if self.pipeline['EX']['Type'] == 'H':
             return 'H'
         #use opcodes to do different things
-        if self.pipeline['WB']['Type'] == 'R':
+        if self.pipeline['EX']['Type'] == 'R':
             if self.pipeline['EX']['OPCODE'] == 'ADD':
                 self.pipeline['EX']['Answer'] = self.ADD(self.pipeline['EX']['RS'],self.pipeline['EX']['RT'])
             if self.pipeline['EX']['OPCODE'] == 'SUB':
@@ -278,9 +278,9 @@ class CPU:
             #these write nothing back
             return
         if self.pipeline['WB']['Type'] == 'R':
-            self.pipeline['WB']['RD'] = '{0:032b}'.format(self.pipeline['WB']['Answer'])
+            self.Reg[self.pipeline['WB']['RD']] = '{0:032b}'.format(self.pipeline['WB']['Answer'])
         else:
-            self.pipeline['WB']['RT'] = '{0:032b}'.format(self.pipeline['WB']['Answer'])
+            self.Reg[self.pipeline['WB']['RT']]= '{0:032b}'.format(self.pipeline['WB']['Answer'])
 
         #do write back to register step then clear the register list
         if self.pipeline['WB']['OPCODE'] == 'LDW':
@@ -305,8 +305,9 @@ class CPU:
         answer = RS + RT
         return answer
 
-    def ADDI(self):
-        return
+    def ADDI(self,RS,IMM):
+        answer = RS + IMM
+        return answer
     def SUB(self):
         return
     def SUBI(self):
@@ -375,6 +376,8 @@ class CPU:
         self.WB()
         #MEM
         #EX
+        if self.EX() == 'H':
+            return 'H'
         #ID
         self.ID()
         #increment pipeline
