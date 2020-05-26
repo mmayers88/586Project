@@ -245,11 +245,10 @@ class CPU:
                     RS = -1 * RS
                 else:
                     RS = int(RS, 2)
-            if IMM != 0:
-                if IMM[0] == 1:
-                    IMM = int(IMM, 2)
-                    IMM = -1 * IMM
-                else:
+            if IMM[0] == 1:
+                IMM = int(IMM, 2)
+                IMM = -1 * IMM
+            else:
                     IMM = int(IMM, 2)
             if self.pipeline['EX']['OPCODE'] == 'ADDI':
                 self.pipeline['EX']['Answer'] = self.ADDI(RS,IMM)
