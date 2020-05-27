@@ -10,8 +10,10 @@ class CPU:
     Reg = [0 for i in range(32)]
     destRegList = []
     def __init__(self, fileName):
+        self.fileWord = fileName
         self.fileName = open(fileName, 'r')
         self.memory = self.fileName.readlines()
+        self.fileName2 = open("out.txt", 'w')
         #first IF
         self.IF()
         return      
@@ -19,8 +21,11 @@ class CPU:
     def printData(self):
         print("PC: ",self.PC)
         print("Register Contents: ")
-        #for x in range(32):
-        #    print(x, self.Reg[x])
+        for x in range(32):
+            try:
+                print(x, self.Reg[x], int(self.Reg[x],2))
+            except:
+                print(x, self.Reg[x], self.Reg[x])
         print("Taken Registers: ",self.destRegList)
         for stage in self.pipeline:
             print(self.pipeline[stage])
@@ -205,7 +210,7 @@ class CPU:
         if self.pipeline['EX']['data'] == 'x':
             return
         if self.pipeline['EX']['Type'] == 'H':
-            return 'H'
+            return
         #use opcodes to do different things
         if self.pipeline['EX']['OPCODE'] == 'BEQ' or self.pipeline['EX']['OPCODE'] == 'BZ' or self.pipeline['EX']['OPCODE'] == 'JR':
             RS = self.Reg[self.pipeline['EX']['RS']]
@@ -322,6 +327,13 @@ class CPU:
             print("Do Store")
             #the data below will need to be written back to memory
             print("Data Store: ", "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)))
+            self.memory[Address] = "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2))
+
+
+            '''
+            self.fileName = open(self.fileWord, 'r')
+            self.memory = self.fileName.readlines()
+            '''
         return
 
     #write back instruction
@@ -329,6 +341,8 @@ class CPU:
     def WB(self):
         if self.pipeline['WB']['data'] == 'x':
             return
+        if self.pipeline['WB']['Type'] == 'H':
+            return 'H'
         if self.pipeline['WB']['OPCODE'] == 'STW' or self.pipeline['WB']['OPCODE'] == 'BZ' or self.pipeline['WB']['OPCODE'] == 'BEQ' or self.pipeline['WB']['OPCODE'] == 'JR':
             #these write nothing back
             return
@@ -422,23 +436,33 @@ class CPU:
         return Answer
 
     def LDW(self,RS, IMM):
-        RS = int(RS, 2)
+        print(RS)
+        if RS != 0:
+            RS = int(RS, 2)
+            RS = RS >> 2
         if IMM[0] == 1:
             IMM = int(IMM, 2)
+            IMM = IMM >> 2
             IMM = -1 * IMM
         else:
             IMM = int(IMM, 2)
+            IMM = IMM >> 2
         Address = RS + IMM
         Answer = '{0:032b}'.format(Address)
         return Answer
 
     def STW(self,RS, IMM):
-        RS = int(RS, 2)
+        print(RS)
+        if RS != 0:
+            RS = int(RS, 2)
+            RS = RS >> 2
         if IMM[0] == 1:
             IMM = int(IMM, 2)
+            IMM = IMM >> 2
             IMM = -1 * IMM
         else:
             IMM = int(IMM, 2)
+            IMM = IMM >> 2
         Address = RS + IMM
         Answer = '{0:032b}'.format(Address)
         return Answer
@@ -446,7 +470,7 @@ class CPU:
     def BZ(self, RS, Address):
         print("RS: ", RS)
         if RS == 0:
-            self.PC = Address
+            self.PC = self.PC - 2 + Address
             self.flush()
         return
 
@@ -454,7 +478,7 @@ class CPU:
         print("RS: ",RS)
         print("RT: ", RT)
         if RS == RT:
-            self.PC = Address
+            self.PC = self.PC - 2 + Address
             self.flush()
         return
 
@@ -471,10 +495,13 @@ class CPU:
         #MEM
         self.MEM()
         #WB
-        self.WB()
-        #EX
-        if self.EX() == 'H':
+        if self.WB() == 'H':
+            self.fileName2.writelines(self.memory)
+            self.fileName2.close()
             return 'H'
+        #EX
+        self.EX()
+            
         #ID
         self.ID()
         #increment pipeline
