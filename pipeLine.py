@@ -53,8 +53,8 @@ class CPU:
             self.pipeline['ID']['RT'] = int(RT,2)
             Imm = ADDr[16:32]
             self.pipeline['ID']['IMM'] = Imm
-            print(ADDr)
-            print(RS, RT, Imm)
+            #print(ADDr)
+            #print(RS, RT, Imm)
             return
         ADDr = data
         RS = ADDr[6:11]
@@ -63,8 +63,8 @@ class CPU:
         self.pipeline['ID']['RT'] = int(RT,2)
         RD = ADDr[16:21]
         self.pipeline['ID']['RD']= int(RD,2)
-        print(ADDr)
-        print(RS, RT, RD)
+        #print(ADDr)
+        #print(RS, RT, RD)
         return
     def decode(self,opInt):
         if opInt == 17:
@@ -183,7 +183,7 @@ class CPU:
                     #print(self.pipeline['ID'])
                     print("STALL")
                     return
-        if self.pipeline['ID']['Type'] == 'R':
+        if self.pipeline['ID']['Type'] == 'R' or self.pipeline['ID']['OPCODE'] == 'STW':
             for x in self.destRegList:
                 if self.pipeline['ID']['RT'] == x:
                     self.pipeline['ID']['Stall'] = 'Y'
@@ -195,8 +195,6 @@ class CPU:
             self.destRegList.append(self.pipeline['ID']['RD'])
         if self.pipeline['ID']['OPCODE'][-1] == 'I' or self.pipeline['ID']['OPCODE'] == 'LDW':
             self.destRegList.append(self.pipeline['ID']['RT'])
-        if self.pipeline['ID']['OPCODE'] == 'STW':
-            self.destRegList.append(self.pipeline['ID']['RS'])
         #if it is, stall
         #print(self.pipeline['ID'])
         return
@@ -236,6 +234,7 @@ class CPU:
                 self.pipeline['EX']['Answer'] = self.OR(self.Reg[self.pipeline['EX']['RS']],self.Reg[self.pipeline['EX']['RT']])
             if self.pipeline['EX']['OPCODE'] == 'XOR':
                 self.pipeline['EX']['Answer'] = self.XOR(self.Reg[self.pipeline['EX']['RS']],self.Reg[self.pipeline['EX']['RT']])
+            return
         else:
             RS = self.Reg[self.pipeline['EX']['RS']]
             IMM = self.pipeline['EX']['IMM']
@@ -266,17 +265,17 @@ class CPU:
                 self.pipeline['EX']['Answer'] = self.LDW(self.Reg[self.pipeline['EX']['RS']],self.pipeline['EX']['IMM'])
             if self.pipeline['EX']['OPCODE'] == 'STW':
                 self.pipeline['EX']['Answer'] = self.STW(self.Reg[self.pipeline['EX']['RS']],self.pipeline['EX']['IMM'])
+            return
             '''
+        if self.pipeline['EX']['OPCODE'] == 'BEQ' or self.pipeline['EX']['OPCODE'] == 'BZ' or self.pipeline['EX']['OPCODE'] == 'JR':
             if self.pipeline['EX']['OPCODE'] == 'BEQ':
                 self.BEQ(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
             if self.pipeline['EX']['OPCODE'] == 'BZ':
                 self.BZ(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
             if self.pipeline['EX']['OPCODE'] == 'JR':
                 self.JR(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+            return
             '''
-
-            
-
         return
 
     #memory
@@ -284,17 +283,22 @@ class CPU:
     def MEM(self):
         if self.pipeline['MEM']['data'] == 'x' or self.pipeline['MEM']['Type'] == 'H':
             return
-        if self.pipeline['MEM']['OPCODE'] != 'LDW' or self.pipeline['MEM']['OPCODE'] != 'STW':
+        if self.pipeline['MEM']['OPCODE'] != 'LDW' and self.pipeline['MEM']['OPCODE'] != 'STW':
             #only load and stores will do anything this step
             return
         #do load or store
+        Address = int(self.pipeline['MEM']['Answer'],2)
+        Address = Address >> 2
+        print("Line: ", Address)
         if self.pipeline['MEM']['OPCODE'] == 'LDW':
             print("Do Load")
+            bina = "{0:032b}".format(int(self.memory[Address],16))
+            print("Load Data: ",bina)
+            self.pipeline['MEM']['Answer'] = int(bina,2)
         else:
             print("Do Store")
-        #remove from destination list
-        if self.pipeline['MEM']['OPCODE'] == 'STW':
-            self.destRegList.remove(self.pipeline['MEM']['RS'])
+            #the data below will need to be written back to memory
+            print("Data Store: ", "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)))
         return
 
     #write back instruction
@@ -336,14 +340,22 @@ class CPU:
     def ADDI(self,RS,IMM):
         answer = RS + IMM
         return answer
-    def SUB(self):
+    def SUB(self, RS, RT):
+        answer = RS - RT
+        return answer
+
+    def SUBI(self, RS, IMM):
+        answer = RS - IMM
         return
-    def SUBI(self):
+
+    def MUL(self, RS, RT):
+        answer = RS * RT
+        return answer
+
+    def MULI(self, RS, IMM):
+        answer = RS * IMM
         return
-    def MUL(self):
-        return
-    def MULI(self):
-        return
+        
     def OR(self, RS, RT):
         RS = int(RS, 2)
         RT = int(RT, 2)
@@ -418,9 +430,10 @@ class CPU:
 
     #this will be the "main" function basically
     def cycle(self):
+        #MEM
+        self.MEM()
         #WB
         self.WB()
-        #MEM
         #EX
         if self.EX() == 'H':
             return 'H'
