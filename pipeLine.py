@@ -51,7 +51,7 @@ class CPU:
             self.pipeline['ID']['RS'] = int(RS,2)
             RT = ADDr[11:16]
             self.pipeline['ID']['RT'] = int(RT,2)
-            Imm = ADDr[17:32]
+            Imm = ADDr[16:32]
             self.pipeline['ID']['IMM'] = Imm
             print(ADDr)
             print(RS, RT, Imm)
@@ -262,11 +262,11 @@ class CPU:
                 self.pipeline['EX']['Answer'] = self.ORI(self.Reg[self.pipeline['EX']['RS']],self.pipeline['EX']['IMM'])
             if self.pipeline['EX']['OPCODE'] == 'XORI':
                 self.pipeline['EX']['Answer'] = self.XORI(self.Reg[self.pipeline['EX']['RS']],self.pipeline['EX']['IMM'])
-            '''
             if self.pipeline['EX']['OPCODE'] == 'LDW':
-                self.pipeline['EX']['Answer'] = self.LDW(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+                self.pipeline['EX']['Answer'] = self.LDW(self.Reg[self.pipeline['EX']['RS']],self.pipeline['EX']['IMM'])
             if self.pipeline['EX']['OPCODE'] == 'STW':
-                self.pipeline['EX']['Answer'] = self.STW(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+                self.pipeline['EX']['Answer'] = self.STW(self.Reg[self.pipeline['EX']['RS']],self.pipeline['EX']['IMM'])
+            '''
             if self.pipeline['EX']['OPCODE'] == 'BEQ':
                 self.BEQ(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
             if self.pipeline['EX']['OPCODE'] == 'BZ':
@@ -288,7 +288,10 @@ class CPU:
             #only load and stores will do anything this step
             return
         #do load or store
-
+        if self.pipeline['MEM']['OPCODE'] == 'LDW':
+            print("Do Load")
+        else:
+            print("Do Store")
         #remove from destination list
         if self.pipeline['MEM']['OPCODE'] == 'STW':
             self.destRegList.remove(self.pipeline['MEM']['RS'])
@@ -381,10 +384,28 @@ class CPU:
         IMM = int(IMM, 2)
         Answer = RS ^IMM
         return Answer
-    def LDW(self):
-        return
-    def STW(self):
-        return
+
+    def LDW(self,RS, IMM):
+        RS = int(RS, 2)
+        if IMM[0] == 1:
+            IMM = int(IMM, 2)
+            IMM = -1 * IMM
+        else:
+            IMM = int(IMM, 2)
+        Address = RS + IMM
+        Answer = '{0:032b}'.format(Address)
+        return Answer
+
+    def STW(self,RS, IMM):
+        RS = int(RS, 2)
+        if IMM[0] == 1:
+            IMM = int(IMM, 2)
+            IMM = -1 * IMM
+        else:
+            IMM = int(IMM, 2)
+        Address = RS + IMM
+        Answer = '{0:032b}'.format(Address)
+        return Answer
     def BZ(self):
         return
     def BEQ(self):
