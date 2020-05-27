@@ -17,3 +17,11 @@ def STW(RS, IMM):
 # address = id(a)
 # cast_value = ctypes.cast(address, ctypes.py_object).value
 # print(cast_value)
+
+# Example for STW
+
+b = 12
+address_b = id(b)
+print (address_b)
+memfield = (ctypes.c_int).from_address(address_b)
+print(memfield)
