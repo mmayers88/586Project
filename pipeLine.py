@@ -18,7 +18,9 @@ class CPU:
 
     def printData(self):
         print("PC: ",self.PC)
-        print("Register Contents: ",self.Reg)
+        print("Register Contents: ")
+        #for x in range(32):
+        #    print(x, self.Reg[x])
         print("Taken Registers: ",self.destRegList)
         for stage in self.pipeline:
             print(self.pipeline[stage])
@@ -42,7 +44,6 @@ class CPU:
         #saving binary to pipeline
         #print(self.pipeline['IF']['data'])
         self.pipeline['IF']['data'] = bina
-        self.PC +=1
         return
     def setSource(self,data,Type):
         if Type == 'I':
@@ -458,7 +459,9 @@ class CPU:
         return
 
     def JR(self,RS):
+        print("RS: ",RS)
         jumpTo = RS >> 2
+        print("JumpTo: ",jumpTo)
         self.PC = jumpTo
         self.flush()
         return
@@ -485,6 +488,7 @@ class CPU:
         self.pipeline['IF'] = {'data': 'x', 'Type': 'x', 'OPCODE':'x', 'RS': 'x', 'RT': 'x', 'RD': 'x', 'IMM':'x', 'Answer': 'x',  'Stall': 'N'}
         #IF
         self.IF()
+        self.PC +=1
         return
 
 
