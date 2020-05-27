@@ -370,7 +370,7 @@ class CPU:
 
     def SUBI(self, RS, IMM):
         answer = RS - IMM
-        return
+        return answer
 
     def MUL(self, RS, RT):
         answer = RS * RT
@@ -378,7 +378,7 @@ class CPU:
 
     def MULI(self, RS, IMM):
         answer = RS * IMM
-        return
+        return answer
 
     def OR(self, RS, RT):
         RS = int(RS, 2)
