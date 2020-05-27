@@ -52,10 +52,7 @@ class CPU:
             RT = ADDr[11:16]
             self.pipeline['ID']['RT'] = int(RT,2)
             Imm = ADDr[17:32]
-            if ADDr[16] == 1:
-                self.pipeline['ID']['IMM'] = -1 * int(Imm,2)
-                return
-            self.pipeline['ID']['IMM'] = int(Imm,2)
+            self.pipeline['ID']['IMM'] = Imm
             print(ADDr)
             print(RS, RT, Imm)
             return
@@ -208,9 +205,78 @@ class CPU:
     def EX(self):
         if self.pipeline['EX']['data'] == 'x':
             return
-        if self.pipeline['WB']['Type'] == 'H':
+        if self.pipeline['EX']['Type'] == 'H':
             return 'H'
         #use opcodes to do different things
+        if self.pipeline['EX']['Type'] == 'R':
+            #get values
+            RS = self.Reg[self.pipeline['EX']['RS']]
+            RT = self.Reg[self.pipeline['EX']['RT']]
+            if RS !=0:
+                if RS[0] == 1:
+                    RS = int(RS, 2)
+                    RS = -1 * RS
+                else:
+                    RS = int(RS, 2)
+            if RT != 0:
+                if RT[0] == 1:
+                    RT = int(RT, 2)
+                    RT = -1 * RT
+                else:
+                    RT = int(RT, 2)
+            if self.pipeline['EX']['OPCODE'] == 'ADD':
+                self.pipeline['EX']['Answer'] = self.ADD(RS,RT)
+            if self.pipeline['EX']['OPCODE'] == 'SUB':
+                self.pipeline['EX']['Answer'] = self.SUB(RS,RT)
+            if self.pipeline['EX']['OPCODE'] == 'MUL':
+                self.pipeline['EX']['Answer'] = self.MUL(RS,RT)
+            if self.pipeline['EX']['OPCODE'] == 'AND':
+                self.pipeline['EX']['Answer'] = self.AND(self.Reg[self.pipeline['EX']['RS']],self.Reg[self.pipeline['EX']['RT']])
+            if self.pipeline['EX']['OPCODE'] == 'OR':
+                self.pipeline['EX']['Answer'] = self.OR(self.Reg[self.pipeline['EX']['RS']],self.Reg[self.pipeline['EX']['RT']])
+            if self.pipeline['EX']['OPCODE'] == 'XOR':
+                self.pipeline['EX']['Answer'] = self.XOR(self.Reg[self.pipeline['EX']['RS']],self.Reg[self.pipeline['EX']['RT']])
+        else:
+            RS = self.Reg[self.pipeline['EX']['RS']]
+            IMM = self.pipeline['EX']['IMM']
+            if RS != 0:
+                if RS[0] == 1:
+                    RS = int(RS, 2)
+                    RS = -1 * RS
+                else:
+                    RS = int(RS, 2)
+            if IMM[0] == 1:
+                IMM = int(IMM, 2)
+                IMM = -1 * IMM
+            else:
+                    IMM = int(IMM, 2)
+            if self.pipeline['EX']['OPCODE'] == 'ADDI':
+                self.pipeline['EX']['Answer'] = self.ADDI(RS,IMM)
+            if self.pipeline['EX']['OPCODE'] == 'SUBI':
+                self.pipeline['EX']['Answer'] = self.SUBI(RS,IMM)
+            if self.pipeline['EX']['OPCODE'] == 'MULI':
+                self.pipeline['EX']['Answer'] = self.MULI(RS,IMM)
+            if self.pipeline['EX']['OPCODE'] == 'ANDI':
+                self.pipeline['EX']['Answer'] = self.ANDI(self.Reg[self.pipeline['EX']['RS']],self.pipeline['EX']['IMM'])
+            if self.pipeline['EX']['OPCODE'] == 'ORI':
+                self.pipeline['EX']['Answer'] = self.ORI(self.Reg[self.pipeline['EX']['RS']],self.pipeline['EX']['IMM'])
+            if self.pipeline['EX']['OPCODE'] == 'XORI':
+                self.pipeline['EX']['Answer'] = self.XORI(self.Reg[self.pipeline['EX']['RS']],self.pipeline['EX']['IMM'])
+            '''
+            if self.pipeline['EX']['OPCODE'] == 'LDW':
+                self.pipeline['EX']['Answer'] = self.LDW(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+            if self.pipeline['EX']['OPCODE'] == 'STW':
+                self.pipeline['EX']['Answer'] = self.STW(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+            if self.pipeline['EX']['OPCODE'] == 'BEQ':
+                self.BEQ(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+            if self.pipeline['EX']['OPCODE'] == 'BZ':
+                self.BZ(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+            if self.pipeline['EX']['OPCODE'] == 'JR':
+                self.JR(self.pipeline['EX']['RS'],self.pipeline['EX']['IMM'])
+            '''
+
+            
+
         return
 
     #memory
@@ -236,6 +302,10 @@ class CPU:
         if self.pipeline['WB']['OPCODE'] == 'STW' or self.pipeline['WB']['OPCODE'] == 'BZ' or self.pipeline['WB']['OPCODE'] == 'BEQ' or self.pipeline['WB']['OPCODE'] == 'JR':
             #these write nothing back
             return
+        if self.pipeline['WB']['Type'] == 'R':
+            self.Reg[self.pipeline['WB']['RD']] = '{0:032b}'.format(self.pipeline['WB']['Answer'])
+        else:
+            self.Reg[self.pipeline['WB']['RT']]= '{0:032b}'.format(self.pipeline['WB']['Answer'])
 
         #do write back to register step then clear the register list
         if self.pipeline['WB']['OPCODE'] == 'LDW':
@@ -256,12 +326,13 @@ class CPU:
 
     #EX functions
     def ADD(self, RS, RT):
-        #self.pipeline['EX']['Answer'] = self.ADD(self.pipeline['EX']['RS'],self.pipeline['EX']['RT'])
+        #self.pipeline['EX']['Answer'] = self.ADD(RS,RT)
         answer = RS + RT
         return answer
 
-    def ADDI(self):
-        return
+    def ADDI(self,RS,IMM):
+        answer = RS + IMM
+        return answer
     def SUB(self):
         return
     def SUBI(self):
@@ -270,18 +341,46 @@ class CPU:
         return
     def MULI(self):
         return
-    def OR(self):
-        return
-    def ORI(self):
-        return
-    def AND(self):
-        return
-    def ANDI(self):
-        return
-    def XOR(self):
-        return
-    def XORI(self):
-        return
+    def OR(self, RS, RT):
+        RS = int(RS, 2)
+        RT = int(RT, 2)
+        Answer = RS | RT
+        return Answer
+
+
+    def ORI(self, RS, IMM):
+        RS = int(RS, 2)
+        IMM = int(IMM, 2)
+        Answer = RS | IMM
+        return Answer
+
+
+    def AND(self, RS, RT):
+        RS = int(RS, 2)
+        RT = int(RT, 2)
+        Answer = RS & RT
+        return Answer
+
+
+    def ANDI(self, RS, IMM):
+        RS = int(RS, 2)
+        IMM = int(IMM, 2)
+        Answer = RS & IMM
+        return Answer
+
+
+    def XOR(self, RS, RT):
+        RS = int(RS, 2)
+        RT = int(RT, 2)
+        Answer = RS ^ RT
+        return Answer
+
+
+    def XORI(self, RS, IMM):
+        RS = int(RS, 2)
+        IMM = int(IMM, 2)
+        Answer = RS ^IMM
+        return Answer
     def LDW(self):
         return
     def STW(self):
@@ -302,6 +401,8 @@ class CPU:
         self.WB()
         #MEM
         #EX
+        if self.EX() == 'H':
+            return 'H'
         #ID
         self.ID()
         #increment pipeline
