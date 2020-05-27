@@ -439,14 +439,11 @@ class CPU:
         print(RS)
         if RS != 0:
             RS = int(RS, 2)
-            RS = RS >> 2
         if IMM[0] == 1:
             IMM = int(IMM, 2)
-            IMM = IMM >> 2
             IMM = -1 * IMM
         else:
             IMM = int(IMM, 2)
-            IMM = IMM >> 2
         Address = RS + IMM
         Answer = '{0:032b}'.format(Address)
         return Answer
@@ -455,14 +452,11 @@ class CPU:
         print(RS)
         if RS != 0:
             RS = int(RS, 2)
-            RS = RS >> 2
         if IMM[0] == 1:
             IMM = int(IMM, 2)
-            IMM = IMM >> 2
             IMM = -1 * IMM
         else:
             IMM = int(IMM, 2)
-            IMM = IMM >> 2
         Address = RS + IMM
         Answer = '{0:032b}'.format(Address)
         return Answer
