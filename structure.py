@@ -12,12 +12,16 @@ processor = pl.CPU(fileName)
 print(processor.printData())
 
 #finite test
-for i in range(33):
+'''
+for i in range(20):
     processor.cycle()
     print(processor.printData())
+'''
+
 
 #waiting for halt
-'''
+
 while processor.cycle() != 'H':
+    #print(processor.printData())
     continue
-'''
+print(processor.printData())

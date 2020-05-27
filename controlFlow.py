@@ -12,7 +12,7 @@ JR:
 def BZ(self, RS, Address):
     print("RS: ", RS)
     if RS == 0:
-        self.PC = Address
+        self.PC = self.PC - 2 + Address
         self.flush()
     return
 
@@ -20,17 +20,28 @@ def BEQ(self, RS, RT, Address):
     print("RS: ",RS)
     print("RT: ", RT)
     if RS == RT:
-        self.PC = Address
+        self.PC = self.PC - 2 + Address
         self.flush()
     return
 
 def JR(self,RS):
-    self.PC = RS
+    jumpTo = RS >> 2
+    self.PC = jumpTo
     self.flush()
     return
 
-def JR(self,RS):
-        jumpTo = RS >> 2
-        self.PC = jumpTo
-        self.flush()
-        return
+
+
+#this happens in init
+self.fileName = open(self.fileWord, 'r')
+self.memory = self.fileName.readlines()
+
+#this happens when storing
+self.memory[1] = "Line2\n"
+self.fileName = open(self.fileWord, 'w')
+self.fileName.writelines(self.memory)
+self.fileName.close()
+
+self.fileName = open(self.fileWord, 'r')
+self.memory = self.fileName.readlines()
+
