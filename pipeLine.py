@@ -327,7 +327,7 @@ class CPU:
             print("Do Store")
             #the data below will need to be written back to memory
             print("Data Store: ", "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)))
-            self.memory[Address] = "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2))
+            self.memory[Address] = "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)) + '\n'
 
 
             '''
