@@ -6,8 +6,18 @@ try:
     print(fileName)
 except:
     sys.exit(os.EX_IOERR) #can't find 'memory' so this returns IO error :p
+try:
+    forwarding = sys.argv[2]
+except:
+    forwarding = 'N'
 
-processor = pl.CPU(fileName)
+if forwarding != 'Y' or forwarding != 'y':
+    forwarding = 'N'
+else:
+    forwarding = 'Y'
+
+
+processor = pl.CPU(fileName,forwarding)
 
 print(processor.printData())
 
@@ -31,3 +41,4 @@ print("Arithmetic Instructions: ", processor.AriCount)
 print("Logical Instructions: ",processor.LogCount)
 print("Memory Access Instructions: ",processor.MemCount)
 print("Control Flow Instructions: ",processor.ConCount)
+print("Stalls: ",processor.stalls)
