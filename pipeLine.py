@@ -9,6 +9,10 @@ class CPU:
     #registers 0-31 initialized to 0, Reg[0] will remain 0
     Reg = [0 for i in range(32)]
     destRegList = []
+    MemCount = 0
+    AriCount = 0
+    LogCount = 0
+    ConCount = 0
     def __init__(self, fileName):
         self.fileWord = fileName
         self.fileName = open(fileName, 'r')
@@ -222,7 +226,7 @@ class CPU:
                 RT = int(RT, 2)
             if IMM !=0:
                 IMM = int(IMM, 2)
-
+            self.ConCount =  self.ConCount + 1 
             if self.pipeline['EX']['OPCODE'] == 'BEQ':
                 self.BEQ(RS,RT,IMM)
                 return
@@ -250,21 +254,27 @@ class CPU:
                 else:
                     RT = int(RT, 2)
             if self.pipeline['EX']['OPCODE'] == 'ADD':
+                self.AriCount =  self.AriCount + 1
                 self.pipeline['EX']['Answer'] = self.ADD(RS,RT)
                 return
             if self.pipeline['EX']['OPCODE'] == 'SUB':
+                self.AriCount =  self.AriCount + 1
                 self.pipeline['EX']['Answer'] = self.SUB(RS,RT)
                 return
             if self.pipeline['EX']['OPCODE'] == 'MUL':
+                self.AriCount =  self.AriCount + 1
                 self.pipeline['EX']['Answer'] = self.MUL(RS,RT)
                 return
             if self.pipeline['EX']['OPCODE'] == 'AND':
+                self.LogCount =  self.LogCount + 1
                 self.pipeline['EX']['Answer'] = self.AND(self.Reg[self.pipeline['EX']['RS']],self.Reg[self.pipeline['EX']['RT']])
                 return
             if self.pipeline['EX']['OPCODE'] == 'OR':
+                self.LogCount =  self.LogCount + 1
                 self.pipeline['EX']['Answer'] = self.OR(self.Reg[self.pipeline['EX']['RS']],self.Reg[self.pipeline['EX']['RT']])
                 return
             if self.pipeline['EX']['OPCODE'] == 'XOR':
+                self.LogCount =  self.LogCount + 1
                 self.pipeline['EX']['Answer'] = self.XOR(self.Reg[self.pipeline['EX']['RS']],self.Reg[self.pipeline['EX']['RT']])
                 return
         else:
@@ -282,27 +292,35 @@ class CPU:
             else:
                 IMM = int(IMM, 2)
             if self.pipeline['EX']['OPCODE'] == 'ADDI':
+                self.AriCount =  self.AriCount + 1
                 self.pipeline['EX']['Answer'] = self.ADDI(RS,IMM)
                 return
             if self.pipeline['EX']['OPCODE'] == 'SUBI':
+                self.AriCount =  self.AriCount + 1
                 self.pipeline['EX']['Answer'] = self.SUBI(RS,IMM)
                 return
             if self.pipeline['EX']['OPCODE'] == 'MULI':
+                self.AriCount =  self.AriCount + 1
                 self.pipeline['EX']['Answer'] = self.MULI(RS,IMM)
                 return
             if self.pipeline['EX']['OPCODE'] == 'ANDI':
+                self.LogCount =  self.LogCount + 1
                 self.pipeline['EX']['Answer'] = self.ANDI(self.Reg[self.pipeline['EX']['RS']],self.pipeline['EX']['IMM'])
                 return
             if self.pipeline['EX']['OPCODE'] == 'ORI':
+                self.LogCount =  self.LogCount + 1
                 self.pipeline['EX']['Answer'] = self.ORI(self.Reg[self.pipeline['EX']['RS']],self.pipeline['EX']['IMM'])
                 return
             if self.pipeline['EX']['OPCODE'] == 'XORI':
+                self.LogCount =  self.LogCount + 1
                 self.pipeline['EX']['Answer'] = self.XORI(self.Reg[self.pipeline['EX']['RS']],self.pipeline['EX']['IMM'])
                 return
             if self.pipeline['EX']['OPCODE'] == 'LDW':
+                self.MemCount =  self.MemCount + 1 
                 self.pipeline['EX']['Answer'] = self.LDW(self.Reg[self.pipeline['EX']['RS']],self.pipeline['EX']['IMM'])
                 return
             if self.pipeline['EX']['OPCODE'] == 'STW':
+                self.MemCount =  self.MemCount + 1 
                 self.pipeline['EX']['Answer'] = self.STW(self.Reg[self.pipeline['EX']['RS']],self.pipeline['EX']['IMM'])
                 return
 
@@ -327,7 +345,7 @@ class CPU:
             print("Do Store")
             #the data below will need to be written back to memory
             print("Data Store: ", "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)))
-            self.memory[Address] = "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2))
+            self.memory[Address] = "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)) + '\n'
 
 
             '''
@@ -439,14 +457,11 @@ class CPU:
         print(RS)
         if RS != 0:
             RS = int(RS, 2)
-            RS = RS >> 2
         if IMM[0] == 1:
             IMM = int(IMM, 2)
-            IMM = IMM >> 2
             IMM = -1 * IMM
         else:
             IMM = int(IMM, 2)
-            IMM = IMM >> 2
         Address = RS + IMM
         Answer = '{0:032b}'.format(Address)
         return Answer
@@ -455,14 +470,11 @@ class CPU:
         print(RS)
         if RS != 0:
             RS = int(RS, 2)
-            RS = RS >> 2
         if IMM[0] == 1:
             IMM = int(IMM, 2)
-            IMM = IMM >> 2
             IMM = -1 * IMM
         else:
             IMM = int(IMM, 2)
-            IMM = IMM >> 2
         Address = RS + IMM
         Answer = '{0:032b}'.format(Address)
         return Answer
@@ -470,7 +482,7 @@ class CPU:
     def BZ(self, RS, Address):
         print("RS: ", RS)
         if RS == 0:
-            self.PC = self.PC - 2 + Address
+            self.PC = self.PC - 3 + Address
             self.flush()
         return
 
@@ -478,7 +490,7 @@ class CPU:
         print("RS: ",RS)
         print("RT: ", RT)
         if RS == RT:
-            self.PC = self.PC - 2 + Address
+            self.PC = self.PC - 3 + Address
             self.flush()
         return
 
