@@ -8,28 +8,35 @@ class CPU:
     PC = 0
     #registers 0-31 initialized to 0, Reg[0] will remain 0
     Reg = [0 for i in range(32)]
+    buffReg = [0 for i in range(32)]
     destRegList = []
+    tempRegList = []
     MemCount = 0
     AriCount = 0
     LogCount = 0
     ConCount = 0
-    def __init__(self, fileName):
+    stalls = 0
+    def __init__(self, fileName, forwarding):
+        self.FWD = forwarding
         self.fileWord = fileName
         self.fileName = open(fileName, 'r')
         self.memory = self.fileName.readlines()
         self.fileName2 = open("out.txt", 'w')
         #first IF
-        self.IF()
+        #self.IF()
         return      
 
     def printData(self):
         print("PC: ",self.PC)
         print("Register Contents: ")
+        '''
         for x in range(32):
             try:
                 print(x, self.Reg[x], int(self.Reg[x],2))
             except:
                 print(x, self.Reg[x], self.Reg[x])
+        '''
+        print("Registers buff: ", self.tempRegList)
         print("Taken Registers: ",self.destRegList)
         for stage in self.pipeline:
             print(self.pipeline[stage])
@@ -53,6 +60,8 @@ class CPU:
         #saving binary to pipeline
         #print(self.pipeline['IF']['data'])
         self.pipeline['IF']['data'] = bina
+        if self.pipeline['IF']['data'] == '00000000000000000000000000000000':
+            self.pipeline['IF'] = {'data': 'x', 'Type': 'x', 'OPCODE':'x', 'RS': 'x', 'RT': 'x', 'RD': 'x', 'IMM':'x', 'Answer': 'x',  'Stall': 'N'}
         return
     def setSource(self,data,Type):
         if Type == 'I':
@@ -190,14 +199,14 @@ class CPU:
             for x in self.destRegList:
                 if self.pipeline['ID']['RS'] == x:
                     self.pipeline['ID']['Stall'] = 'Y'
-                    #print(self.pipeline['ID'])
+                    self.stalls = self.stalls + 1
                     print("STALL")
                     return
         if self.pipeline['ID']['Type'] == 'R' or self.pipeline['ID']['OPCODE'] == 'STW':
             for x in self.destRegList:
                 if self.pipeline['ID']['RT'] == x:
                     self.pipeline['ID']['Stall'] = 'Y'
-                    #print(self.pipeline['ID'])
+                    self.stalls = self.stalls + 1
                     print("STALL")
                     return
         self.pipeline['ID']['Stall'] = 'N'
@@ -346,12 +355,6 @@ class CPU:
             #the data below will need to be written back to memory
             print("Data Store: ", "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)))
             self.memory[Address] = "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)) + '\n'
-
-
-            '''
-            self.fileName = open(self.fileWord, 'r')
-            self.memory = self.fileName.readlines()
-            '''
         return
 
     #write back instruction
@@ -372,11 +375,17 @@ class CPU:
         #do write back to register step then clear the register list
         if self.pipeline['WB']['OPCODE'] == 'LDW':
             self.destRegList.remove(self.pipeline['WB']['RT'])
+            if self.FWD == 'Y':
+               self.tempRegList.remove(self.pipeline['WB']['RT'])
             return
         if self.pipeline['WB']['OPCODE'][-1] == 'I':
             self.destRegList.remove(self.pipeline['WB']['RT'])
+            if self.FWD == 'Y':
+                self.tempRegList.remove(self.pipeline['WB']['RT'])
         else:
             self.destRegList.remove(self.pipeline['WB']['RD'])
+            if self.FWD == 'Y':
+                self.tempRegList.remove(self.pipeline['WB']['RD'])
         return
 
 
@@ -501,19 +510,49 @@ class CPU:
         self.PC = jumpTo
         self.flush()
         return
+    
+    def forwarding(self):
+        if self.pipeline['EX']['data'] == 'x' or self.pipeline['EX']['Type'] == 'H':
+            return
+        if self.pipeline['EX']['OPCODE'] == 'LDW' or self.pipeline['EX']['OPCODE'] == 'STW' or self.pipeline['EX']['OPCODE'] == 'BZ' or self.pipeline['EX']['OPCODE'] == 'BEQ' or self.pipeline['EX']['OPCODE'] == 'JR':
+            ##only opcodes that return data matter
+            return
+        if self.pipeline['EX']['Type'] == 'R':
+            self.buffReg[self.pipeline['EX']['RD']] = '{0:032b}'.format(self.pipeline['EX']['Answer'])
+        else:
+            self.buffReg[self.pipeline['EX']['RT']]= '{0:032b}'.format(self.pipeline['EX']['Answer'])
 
+        
+        if self.pipeline['EX']['OPCODE'][-1] == 'I':
+            self.tempRegList.append(self.pipeline['EX']['RT'])
+        else:
+            self.tempRegList.append(self.pipeline['EX']['RD'])
+        return
+
+    def forMEM(self):
+        if self.pipeline['MEM']['data'] == 'x' or self.pipeline['MEM']['Type'] == 'H':
+            return
+        if self.pipeline['MEM']['OPCODE'] == 'LDW':
+            self.buffReg[self.pipeline['MEM']['RT']]= '{0:032b}'.format(self.pipeline['MEM']['Answer'])
+            self.tempRegList.append(self.pipeline['MEM']['RT'])
+            return
+        return
     #this will be the "main" function basically
     def cycle(self):
         #MEM
         self.MEM()
+        if self.FWD == 'Y':
+            self.forMEM()
         #WB
         if self.WB() == 'H':
             self.fileName2.writelines(self.memory)
             self.fileName2.close()
+            self.ConCount = self.ConCount + 1
             return 'H'
         #EX
         self.EX()
-            
+        if self.FWD == 'Y':
+            self.forwarding()
         #ID
         self.ID()
         #increment pipeline
