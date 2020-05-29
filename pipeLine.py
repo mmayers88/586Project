@@ -16,7 +16,7 @@ class CPU:
     LogCount = 0
     ConCount = 0
     stalls = 0
-    def __init__(self, fileName, forwarding):
+    def __init__(self, fileName, forwarding = 'N'):
         self.FWD = forwarding
         self.fileWord = fileName
         self.fileName = open(fileName, 'r')
@@ -199,14 +199,14 @@ class CPU:
             if self.pipeline['ID']['RS'] == x:
                 self.pipeline['ID']['Stall'] = 'Y'
                 self.stalls = self.stalls + 1
-                print("STALL")
+               #print("STALL")
                 return
         if self.pipeline['ID']['Type'] == 'R' or self.pipeline['ID']['OPCODE'] == 'STW':
             for x in self.destRegList:
                 if self.pipeline['ID']['RT'] == x:
                     self.pipeline['ID']['Stall'] = 'Y'
                     self.stalls = self.stalls + 1
-                    print("STALL")
+                   #print("STALL")
                     return
         self.pipeline['ID']['Stall'] = 'N'
         if self.pipeline['ID']['Type'] == 'R':
@@ -343,16 +343,16 @@ class CPU:
         #do load or store
         Address = int(self.pipeline['MEM']['Answer'],2)
         Address = Address >> 2
-        print("Line: ", Address)
+       #print("Line: ", Address)
         if self.pipeline['MEM']['OPCODE'] == 'LDW':
-            print("Do Load")
+           #print("Do Load")
             bina = "{0:032b}".format(int(self.memory[Address],16))
-            print("Load Data: ",bina)
+           #print("Load Data: ",bina)
             self.pipeline['MEM']['Answer'] = int(bina,2)
         else:
-            print("Do Store")
+           #print("Do Store")
             #the data below will need to be written back to memory
-            print("Data Store: ", "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)))
+           #print("Data Store: ", "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)))
             self.memory[Address] = "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)) + '\n'
         return
 
@@ -401,7 +401,7 @@ class CPU:
 
     def ADDI(self,RS,IMM):
         answer = RS + IMM
-        print("Answer: ", answer)
+       #print("Answer: ", answer)
         return answer
 
     def SUB(self, RS, RT):
@@ -462,7 +462,7 @@ class CPU:
         return Answer
 
     def LDW(self,RS, IMM):
-        print(RS)
+       #print(RS)
         if RS != 0:
             RS = int(RS, 2)
         if IMM[0] == 1:
@@ -475,7 +475,7 @@ class CPU:
         return Answer
 
     def STW(self,RS, IMM):
-        print(RS)
+       #print(RS)
         if RS != 0:
             RS = int(RS, 2)
         if IMM[0] == 1:
@@ -488,24 +488,24 @@ class CPU:
         return Answer
 
     def BZ(self, RS, Address):
-        print("RS: ", RS)
+       #print("RS: ", RS)
         if RS == 0:
             self.PC = self.PC - 3 + Address
             self.flush()
         return
 
     def BEQ(self, RS, RT, Address):
-        print("RS: ",RS)
-        print("RT: ", RT)
+       #print("RS: ",RS)
+       #print("RT: ", RT)
         if RS == RT:
             self.PC = self.PC - 3 + Address
             self.flush()
         return
 
     def JR(self,RS):
-        print("RS: ",RS)
+       #print("RS: ",RS)
         jumpTo = RS >> 2
-        print("JumpTo: ",jumpTo)
+       #print("JumpTo: ",jumpTo)
         self.PC = jumpTo
         self.flush()
         return

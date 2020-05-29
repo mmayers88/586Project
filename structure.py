@@ -19,25 +19,28 @@ else:
 
 processor = pl.CPU(fileName,forwarding)
 
-print(processor.printData())
+#processor.printData()
 
 #finite test
 '''
 for i in range(20):
     processor.cycle()
-    print(processor.printData())
+    processor.printData()
 '''
 
 
 #waiting for halt
 
 while processor.cycle() != 'H':
-    processor.printData()
+    #processor.printData()
     continue
 
+print("***********************************************\nRegisters: \n")
 processor.printReg()
+print("***********************************************\nFinal Pipeline State: \n")
 processor.printData()
 intCount = processor.AriCount + processor.LogCount + processor.MemCount + processor.ConCount
+print("***********************************************\nCounts: \n")
 print("Instruction Count: ", intCount)
 print("Arithmetic Instructions: ", processor.AriCount)
 print("Logical Instructions: ",processor.LogCount)
