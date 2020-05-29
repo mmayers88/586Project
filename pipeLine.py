@@ -16,7 +16,7 @@ class CPU:
     LogCount = 0
     ConCount = 0
     stalls = 0
-    def __init__(self, fileName, forwarding):
+    def __init__(self, fileName, forwarding = 'N'):
         self.FWD = forwarding
         self.fileWord = fileName
         self.fileName = open(fileName, 'r')
@@ -576,7 +576,7 @@ def main():
 
     print(test.printData())
     
-    for i in range(10):
+    for i in range(100):
         test.cycle()
         print(test.printData())
     
