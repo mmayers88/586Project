@@ -25,17 +25,17 @@ class CPU:
         #first IF
         #self.IF()
         return      
-
-    def printData(self):
-        print("PC: ",self.PC)
-        print("Register Contents: ")
-        '''
+    def printReg(self):
         for x in range(32):
             try:
                 print(x, self.Reg[x], int(self.Reg[x],2))
             except:
                 print(x, self.Reg[x], self.Reg[x])
-        '''
+
+    def printData(self):
+        print("PC: ",self.PC)
+        print("Register Contents: ")
+        #self.printReg()
         print("Registers buff: ", self.tempRegList)
         print("Taken Registers: ",self.destRegList)
         for stage in self.pipeline:
@@ -195,13 +195,12 @@ class CPU:
             return
 
         #ID must check if source register is a destination
-        if self.pipeline['ID']['OPCODE'] != 'STW':
-            for x in self.destRegList:
-                if self.pipeline['ID']['RS'] == x:
-                    self.pipeline['ID']['Stall'] = 'Y'
-                    self.stalls = self.stalls + 1
-                    print("STALL")
-                    return
+        for x in self.destRegList:
+            if self.pipeline['ID']['RS'] == x:
+                self.pipeline['ID']['Stall'] = 'Y'
+                self.stalls = self.stalls + 1
+                print("STALL")
+                return
         if self.pipeline['ID']['Type'] == 'R' or self.pipeline['ID']['OPCODE'] == 'STW':
             for x in self.destRegList:
                 if self.pipeline['ID']['RT'] == x:

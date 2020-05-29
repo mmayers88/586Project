@@ -32,9 +32,11 @@ for i in range(20):
 #waiting for halt
 
 while processor.cycle() != 'H':
-    print(processor.printData())
+    processor.printData()
     continue
-print(processor.printData())
+
+processor.printReg()
+processor.printData()
 intCount = processor.AriCount + processor.LogCount + processor.MemCount + processor.ConCount
 print("Instruction Count: ", intCount)
 print("Arithmetic Instructions: ", processor.AriCount)
