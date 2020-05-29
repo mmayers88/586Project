@@ -25,9 +25,3 @@ def STW(RS, IMM):
     return Answer
 
 
-
-# Example for LDW
-# a = 5
-# address = id(a)
-# cast_value = ctypes.cast(address, ctypes.py_object).value
-# print(cast_value)

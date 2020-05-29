@@ -1,5 +1,5 @@
 import pipeLine as pl 
-import sys,os
+import sys, os
 
 try:
     fileName = sys.argv[1]
