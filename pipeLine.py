@@ -35,7 +35,7 @@ class CPU:
     def printData(self):
         print("PC: ",self.PC)
         print("Register Contents: ")
-        #self.printReg()
+        self.printReg()
         print("Registers buff: ", self.tempRegList)
         print("Taken Registers: ",self.destRegList)
         for stage in self.pipeline:
