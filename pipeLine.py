@@ -493,6 +493,7 @@ class CPU:
             print ("Address", Address)
             print("PC", self.PC)
             self.PC = self.PC - 3 + Address
+            #Address = "{0:032b}".format(int(Address, 16))
             #self.PC = (Address -1) << 2
             self.flush()
         return
@@ -502,6 +503,7 @@ class CPU:
        #print("RT: ", RT)
         if RS == RT:
             self.PC = self.PC - 3 + Address
+            #Address = "{0:032b}".format(int(Address,16))
             #self.PC = (Address - 1) << 2
             self.flush()
         return
@@ -509,6 +511,7 @@ class CPU:
     def JR(self,RS):
        #print("RS: ",RS)
         jumpTo = RS >> 2
+        #jumpTo = RS
        #print("JumpTo: ",jumpTo)
         self.PC = jumpTo
         self.flush()
@@ -579,7 +582,7 @@ def main():
 
     print(test.printData())
     
-    for i in range(50):
+    for i in range(1000):
         test.cycle()
         print(test.printData())
     
