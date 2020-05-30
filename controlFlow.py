@@ -13,6 +13,7 @@ def BZ(self, RS, Address):
     print("RS: ", RS)
     if RS == 0:
         self.PC = self.PC - 2 + Address
+        #self.PC = (Address >> 2) + 1
         self.flush()
     return
 
@@ -21,6 +22,7 @@ def BEQ(self, RS, RT, Address):
     print("RT: ", RT)
     if RS == RT:
         self.PC = self.PC - 2 + Address
+        #self.PC = (Address >> 2) + 1
         self.flush()
     return
 

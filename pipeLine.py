@@ -28,7 +28,7 @@ class CPU:
     def printReg(self):
         for x in range(32):
             try:
-                print(x, self.Reg[x], int(self.Reg[x],2))
+                print( x, self.Reg[x], int(self.Reg[x],2))
             except:
                 print(x, self.Reg[x], self.Reg[x])
 
@@ -490,7 +490,10 @@ class CPU:
     def BZ(self, RS, Address):
        #print("RS: ", RS)
         if RS == 0:
+            print ("Address", Address)
+            print("PC", self.PC)
             self.PC = self.PC - 3 + Address
+            #self.PC = (Address -1) << 2
             self.flush()
         return
 
@@ -499,6 +502,7 @@ class CPU:
        #print("RT: ", RT)
         if RS == RT:
             self.PC = self.PC - 3 + Address
+            #self.PC = (Address - 1) << 2
             self.flush()
         return
 
@@ -575,7 +579,7 @@ def main():
 
     print(test.printData())
     
-    for i in range(100):
+    for i in range(50):
         test.cycle()
         print(test.printData())
     
