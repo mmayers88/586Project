@@ -33,7 +33,8 @@ class CPU:
                 print(x, self.Reg[x], self.Reg[x])
 
     def printData(self):
-        print("PC: ",self.PC)
+        printPC = self.PC << 2
+        print("PC: ",printPC)
         print("Register Contents: ")
         self.printReg()
         print("Registers buff: ", self.tempRegList)
@@ -490,8 +491,8 @@ class CPU:
     def BZ(self, RS, Address):
        #print("RS: ", RS)
         if RS == 0:
-            print ("Address", Address)
-            print("PC", self.PC)
+            #print ("Address", Address)
+            #print("PC", self.PC)
             self.PC = self.PC - 3 + Address
             #Address = "{0:032b}".format(int(Address, 16))
             #self.PC = (Address -1) << 2
@@ -554,6 +555,7 @@ class CPU:
             self.fileName2.writelines(self.memory)
             self.fileName2.close()
             self.ConCount = self.ConCount + 1
+            self.PC=self.PC - 4
             return 'H'
         #EX
         self.EX()
