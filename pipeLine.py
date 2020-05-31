@@ -228,6 +228,7 @@ class CPU:
 
     #execute Instruction
     def EX(self):
+        print("In Ex")
         if self.pipeline['EX']['data'] == 'x':
             return
         if self.pipeline['EX']['Type'] == 'H':
@@ -236,6 +237,7 @@ class CPU:
         if self.pipeline['EX']['OPCODE'] == 'BEQ' or self.pipeline['EX']['OPCODE'] == 'BZ' or self.pipeline['EX']['OPCODE'] == 'JR':
 
             if self.pipeline['EX']['Stall'] == 'F':
+<<<<<<< HEAD
                 for x in self.tempRegList:
                     if self.pipeline['EX']['RS'] == x:
                         RS = self.buffReg[self.pipeline['EX']['RS']]
@@ -244,27 +246,36 @@ class CPU:
                     else:
                         RS = self.Reg[self.pipeline['EX']['RS']]
                         print("RS2 ", RS)
+=======
+                try:
+                    for x in self.tempRegList:
+                        if self.pipeline['EX']['RS'] == x:
+                            RS = self.buffReg[self.pipeline['EX']['RS']]
+                            break
+                        else:
+                            RS = self.Reg[self.pipeline['EX']['RS']]
+                except:
+                    print("continue stall")
+>>>>>>> 30eb6060168012e4e0daefc566729ba678358646
             else:
                 RS = self.Reg[self.pipeline['EX']['RS']]
                 print("RS3 ", RS)
 
             if self.pipeline['EX']['Stall'] == 'F':
-                for x in self.tempRegList:
-                    if self.pipeline['EX']['RT'] == x:
-                        RT = self.buffReg[self.pipeline['EX']['RT']]
-                        break
-                    else:
-                        RT = self.Reg[self.pipeline['EX']['RT']]
+                try:
+                    for x in self.tempRegList:
+                        if self.pipeline['EX']['RT'] == x:
+                            RT = self.buffReg[self.pipeline['EX']['RT']]
+                            break
+                        else:
+                            RT = self.Reg[self.pipeline['EX']['RT']]
+                except:
+                    print("continue stall")
             else:
                 RT = self.Reg[self.pipeline['EX']['RT']]
 
             IMM = self.pipeline['EX']['IMM']
-            if RS !=0:
-                RS = int(RS, 2)
-            if RT !=0:
-                RT = int(RT, 2)
-            if IMM !=0:
-                IMM = int(IMM, 2)
+            
             self.ConCount =  self.ConCount + 1 
             if self.pipeline['EX']['OPCODE'] == 'BEQ':
                 self.BEQ(RS,RT,IMM)
@@ -277,43 +288,41 @@ class CPU:
                 return
 
         if self.pipeline['EX']['Type'] == 'R':
+            print("IN R")
             #get values
             if self.pipeline['EX']['Stall'] == 'F':
-                for x in self.tempRegList:
-                    if self.pipeline['EX']['RS'] == x:
-                        print("1")
-                        RS = self.buffReg[self.pipeline['EX']['RS']]
-                        break
-                    else:
-                        print("2")
-                        RS = self.Reg[self.pipeline['EX']['RS']]
+                print("Found F")
+                try:
+                    for x in self.tempRegList:
+                        print(self.pipeline['EX']['RS'])
+                        if self.pipeline['EX']['RS'] == x:
+                            print("1")
+                            RS = self.buffReg[self.pipeline['EX']['RS']]
+                            break
+                        else:
+                            print("2")
+                            RS = self.Reg[self.pipeline['EX']['RS']]
+                except:
+                    print("continue stall")
             else:
                 print("3")
                 print(self.pipeline['EX'])
                 RS = self.Reg[self.pipeline['EX']['RS']]
 
             if self.pipeline['EX']['Stall'] == 'F':
-                for x in self.tempRegList:
-                    if self.pipeline['EX']['RT'] == x:
-                        RT = self.buffReg[self.pipeline['EX']['RT']]
-                        break
-                    else:
-                        RT = self.Reg[self.pipeline['EX']['RT']]
+                try:
+                    for x in self.tempRegList:
+                        if self.pipeline['EX']['RT'] == x:
+                            RT = self.buffReg[self.pipeline['EX']['RT']]
+                            break
+                        else:
+                            RT = self.Reg[self.pipeline['EX']['RT']]
+                except:
+                    print("continue stall")
             else:
                 RT = self.Reg[self.pipeline['EX']['RT']]
 
-            if RS !=0:
-                if RS[0] == 1:
-                    RS = int(RS, 2)
-                    RS = -1 * RS
-                else:
-                    RS = int(RS, 2)
-            if RT != 0:
-                if RT[0] == 1:
-                    RT = int(RT, 2)
-                    RT = -1 * RT
-                else:
-                    RT = int(RT, 2)
+            
             if self.pipeline['EX']['OPCODE'] == 'ADD':
                 self.AriCount =  self.AriCount + 1
                 self.pipeline['EX']['Answer'] = self.ADD(RS,RT)
@@ -328,38 +337,33 @@ class CPU:
                 return
             if self.pipeline['EX']['OPCODE'] == 'AND':
                 self.LogCount =  self.LogCount + 1
-                self.pipeline['EX']['Answer'] = self.AND(self.Reg[self.pipeline['EX']['RS']],self.Reg[self.pipeline['EX']['RT']])
+                self.pipeline['EX']['Answer'] = self.AND(RS,RT)
                 return
             if self.pipeline['EX']['OPCODE'] == 'OR':
                 self.LogCount =  self.LogCount + 1
-                self.pipeline['EX']['Answer'] = self.OR(self.Reg[self.pipeline['EX']['RS']],self.Reg[self.pipeline['EX']['RT']])
+                self.pipeline['EX']['Answer'] = self.OR(RS,RT)
                 return
             if self.pipeline['EX']['OPCODE'] == 'XOR':
                 self.LogCount =  self.LogCount + 1
-                self.pipeline['EX']['Answer'] = self.XOR(self.Reg[self.pipeline['EX']['RS']],self.Reg[self.pipeline['EX']['RT']])
+                self.pipeline['EX']['Answer'] = self.XOR(RS,RT)
                 return
         else:
             if self.pipeline['EX']['Stall'] == 'F':
-                for x in self.tempRegList:
-                    if self.pipeline['EX']['RS'] == x:
-                        RS = self.buffReg[self.pipeline['EX']['RS']]
-                        break
-                    else:
-                        RS = self.Reg[self.pipeline['EX']['RS']]
+                try:
+                    for x in self.tempRegList:
+                        print("Forward")
+                        if self.pipeline['EX']['RS'] == x:
+                            RS = self.buffReg[self.pipeline['EX']['RS']]
+                            break
+                        else:
+                            print("No FOrward")
+                            RS = self.Reg[self.pipeline['EX']['RS']]
+                except:
+                    print("continue stall")
             else:
                 RS = self.Reg[self.pipeline['EX']['RS']]
             IMM = self.pipeline['EX']['IMM']
-            if RS != 0:
-                if RS[0] == 1:
-                    RS = int(RS, 2)
-                    RS = -1 * RS
-                else:
-                    RS = int(RS, 2)
-            if IMM[0] == 1:
-                IMM = int(IMM, 2)
-                IMM = -1 * IMM
-            else:
-                IMM = int(IMM, 2)
+            
             if self.pipeline['EX']['OPCODE'] == 'ADDI':
                 self.AriCount =  self.AriCount + 1
                 self.pipeline['EX']['Answer'] = self.ADDI(RS,IMM)
@@ -373,24 +377,25 @@ class CPU:
                 self.pipeline['EX']['Answer'] = self.MULI(RS,IMM)
                 return
             if self.pipeline['EX']['OPCODE'] == 'ANDI':
+                print(RS)
                 self.LogCount =  self.LogCount + 1
-                self.pipeline['EX']['Answer'] = self.ANDI(self.Reg[self.pipeline['EX']['RS']],self.pipeline['EX']['IMM'])
+                self.pipeline['EX']['Answer'] = self.ANDI(RS,IMM)
                 return
             if self.pipeline['EX']['OPCODE'] == 'ORI':
                 self.LogCount =  self.LogCount + 1
-                self.pipeline['EX']['Answer'] = self.ORI(self.Reg[self.pipeline['EX']['RS']],self.pipeline['EX']['IMM'])
+                self.pipeline['EX']['Answer'] = self.ORI(RS,IMM)
                 return
             if self.pipeline['EX']['OPCODE'] == 'XORI':
                 self.LogCount =  self.LogCount + 1
-                self.pipeline['EX']['Answer'] = self.XORI(self.Reg[self.pipeline['EX']['RS']],self.pipeline['EX']['IMM'])
+                self.pipeline['EX']['Answer'] = self.XORI(RS,IMM)
                 return
             if self.pipeline['EX']['OPCODE'] == 'LDW':
                 self.MemCount =  self.MemCount + 1 
-                self.pipeline['EX']['Answer'] = self.LDW(self.Reg[self.pipeline['EX']['RS']],self.pipeline['EX']['IMM'])
+                self.pipeline['EX']['Answer'] = self.LDW(RS,IMM)
                 return
             if self.pipeline['EX']['OPCODE'] == 'STW':
                 self.MemCount =  self.MemCount + 1 
-                self.pipeline['EX']['Answer'] = self.STW(self.Reg[self.pipeline['EX']['RS']],self.pipeline['EX']['IMM'])
+                self.pipeline['EX']['Answer'] = self.STW(RS,IMM)
                 return
 
     #memory
@@ -457,27 +462,96 @@ class CPU:
 
     #EX functions
     def ADD(self, RS, RT):
+        if RS != 0 :
+            if RS[0] == 1:
+                RS = int(RS, 2)
+                RS = -1 * RS
+            else:
+                RS = int(RS, 2)
+        if RT != 0:
+            if RT[0] == 1:
+                RT = int(RT, 2)
+                RT = -1 * RT
+            else:
+                RT = int(RT, 2)
         answer = RS + RT
         return answer
 
     def ADDI(self,RS,IMM):
+        if RS != 0:
+            if RS[0] == 1:
+                RS = int(RS, 2)
+                RS = -1 * RS
+            else:
+                RS = int(RS, 2)
+        if IMM[0] == 1:
+            IMM = int(IMM, 2)
+            IMM = -1 * IMM
+        else:
+            IMM = int(IMM, 2)
         answer = RS + IMM
        #print("Answer: ", answer)
         return answer
 
     def SUB(self, RS, RT):
+        if RS != 0 :
+            if RS[0] == 1:
+                RS = int(RS, 2)
+                RS = -1 * RS
+            else:
+                RS = int(RS, 2)
+        if RT != 0:
+            if RT[0] == 1:
+                RT = int(RT, 2)
+                RT = -1 * RT
+            else:
+                RT = int(RT, 2)
         answer = RS - RT
         return answer
 
     def SUBI(self, RS, IMM):
+        if RS != 0:
+            if RS[0] == 1:
+                RS = int(RS, 2)
+                RS = -1 * RS
+            else:
+                RS = int(RS, 2)
+        if IMM[0] == 1:
+            IMM = int(IMM, 2)
+            IMM = -1 * IMM
+        else:
+            IMM = int(IMM, 2)
         answer = RS - IMM
         return answer
 
     def MUL(self, RS, RT):
+        if RS != 0 :
+            if RS[0] == 1:
+                RS = int(RS, 2)
+                RS = -1 * RS
+            else:
+                RS = int(RS, 2)
+        if RT != 0:
+            if RT[0] == 1:
+                RT = int(RT, 2)
+                RT = -1 * RT
+            else:
+                RT = int(RT, 2)
         answer = RS * RT
         return answer
 
     def MULI(self, RS, IMM):
+        if RS != 0:
+            if RS[0] == 1:
+                RS = int(RS, 2)
+                RS = -1 * RS
+            else:
+                RS = int(RS, 2)
+        if IMM[0] == 1:
+            IMM = int(IMM, 2)
+            IMM = -1 * IMM
+        else:
+            IMM = int(IMM, 2)
         answer = RS * IMM
         return answer
 
@@ -548,30 +622,38 @@ class CPU:
         Answer = '{0:032b}'.format(Address)
         return Answer
 
-    def BZ(self, RS, Address):
-       #print("RS: ", RS)
+    def BZ(self, RS, IMM):
+        if RS !=0:
+            RS = int(RS, 2)
+        if IMM !=0:
+            IMM = int(IMM, 2)
         if RS == 0:
             #print ("Address", Address)
             #print("PC", self.PC)
-            self.PC = self.PC - 3 + Address
+            self.PC = self.PC - 3 + IMM
             #Address = "{0:032b}".format(int(Address, 16))
             #self.PC = (Address -1) << 2
             self.flush()
         return
 
-    def BEQ(self, RS, RT, Address):
-       #print("RS: ",RS)
-       #print("RT: ", RT)
+    def BEQ(self, RS, RT, IMM):
+        if RS !=0:
+            RS = int(RS, 2)
+        if RT !=0:
+            RT = int(RT, 2)
+        if IMM !=0:
+            IMM = int(IMM, 2)
         if RS == RT:
-            self.PC = self.PC - 3 + Address
+            self.PC = self.PC - 3 + IMM
             #Address = "{0:032b}".format(int(Address,16))
             #self.PC = (Address - 1) << 2
             self.flush()
         return
 
     def JR(self,RS):
-       #print("RS: ",RS)
-        jumpTo = RS  >> 2
+        if RS !=0:
+            RS = int(RS, 2)
+        jumpTo = RS >> 2
         #jumpTo = RS
        #print("JumpTo: ",jumpTo)
         self.PC = jumpTo
@@ -583,12 +665,33 @@ class CPU:
             for x in self.tempRegList:
                 if self.pipeline['ID']['RS'] == x:
                     self.pipeline['ID']['Stall'] = 'F'
+                    if self.pipeline['ID']['Type'] == 'R':
+                        self.destRegList.append(self.pipeline['ID']['RD'])
+                    if self.pipeline['ID']['OPCODE'][-1] == 'I' or self.pipeline['ID']['OPCODE'] == 'LDW':
+                        self.destRegList.append(self.pipeline['ID']['RT'])    
                     return
             if self.pipeline['ID']['Type'] == 'R' or self.pipeline['ID']['OPCODE'] == 'STW':
                 for x in self.tempRegList:
                     if self.pipeline['ID']['RT'] == x:
                         self.pipeline['ID']['Stall'] = 'F'
+                        if self.pipeline['ID']['Type'] == 'R':
+                            self.destRegList.append(self.pipeline['ID']['RD'])
+                        if self.pipeline['ID']['OPCODE'][-1] == 'I' or self.pipeline['ID']['OPCODE'] == 'LDW':
+                            self.destRegList.append(self.pipeline['ID']['RT'])
                         return
+        
+    def remFWD(self):
+        if self.pipeline['EX']['Stall'] == 'F':
+            for x in self.tempRegList:
+                if self.pipeline['EX']['RS'] == x:
+                    self.pipeline['EX']['Stall'] = 'F'
+                    return
+            if self.pipeline['EX']['Type'] == 'R' or self.pipeline['EX']['OPCODE'] == 'STW':
+                for x in self.tempRegList:
+                    if self.pipeline['EX']['RT'] == x:
+                        self.pipeline['EX']['Stall'] = 'F'
+                        return
+            self.pipeline['EX']['Stall'] = 'N'
 
     def forwarding(self):
         if self.pipeline['EX']['data'] == 'x' or self.pipeline['EX']['Type'] == 'H':
@@ -630,6 +733,8 @@ class CPU:
             return 'H'
         
         #EX
+        if self.FWD == 'Y':
+            self.remFWD()
         self.EX()
         if self.FWD == 'Y':
             self.forwarding()
