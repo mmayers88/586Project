@@ -11,11 +11,13 @@ try:
 except:
     forwarding = 'N'
 
-if forwarding != 'Y' or forwarding != 'y':
+if forwarding != 'Y' and forwarding != 'y':
     forwarding = 'N'
 else:
     forwarding = 'Y'
 
+if forwarding == 'Y':
+    print("Forwarding Enabled")
 
 processor = pl.CPU(fileName,forwarding)
 
@@ -32,7 +34,7 @@ for i in range(20):
 #waiting for halt
 
 while processor.cycle() != 'H':
-    #processor.printData()
+    processor.printData()
     continue
 
 print("***********************************************\nRegisters: \n")
