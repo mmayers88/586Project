@@ -510,7 +510,7 @@ class CPU:
 
     def JR(self,RS):
        #print("RS: ",RS)
-        jumpTo = RS >> 2
+        jumpTo = RS  >> 2
         #jumpTo = RS
        #print("JumpTo: ",jumpTo)
         self.PC = jumpTo
