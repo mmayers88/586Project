@@ -639,14 +639,9 @@ class CPU:
         return
 
     def JR(self,RS):
-<<<<<<< HEAD
         if RS !=0:
             RS = int(RS, 2)
         jumpTo = RS >> 2
-=======
-       #print("RS: ",RS)
-        jumpTo = RS  >> 2
->>>>>>> 2a7bc80ee017c3d24ed99388887806c9c9c99a47
         #jumpTo = RS
        #print("JumpTo: ",jumpTo)
         self.PC = jumpTo
