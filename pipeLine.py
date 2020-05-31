@@ -31,11 +31,20 @@ class CPU:
                 print( x, self.Reg[x], int(self.Reg[x],2))
             except:
                 print(x, self.Reg[x], self.Reg[x])
+    def printbuffReg(self):
+        for x in range(32):
+            try:
+                print( x, self.buffReg[x], int(self.buffReg[x],2))
+            except:
+                print(x, self.buffReg[x], self.buffReg[x])
 
     def printData(self):
-        print("PC: ",self.PC)
+        printPC = self.PC << 2
+        print("PC: ",printPC)
         print("Register Contents: ")
-        self.printReg()
+        #self.printReg()
+        print(" BUFF Register Contents: ")
+        self.printbuffReg()
         print("Registers buff: ", self.tempRegList)
         print("Taken Registers: ",self.destRegList)
         for stage in self.pipeline:
@@ -225,8 +234,27 @@ class CPU:
             return
         #use opcodes to do different things
         if self.pipeline['EX']['OPCODE'] == 'BEQ' or self.pipeline['EX']['OPCODE'] == 'BZ' or self.pipeline['EX']['OPCODE'] == 'JR':
-            RS = self.Reg[self.pipeline['EX']['RS']]
-            RT = self.Reg[self.pipeline['EX']['RT']]
+
+            if self.pipeline['EX']['Stall'] == 'F':
+                for x in self.tempRegList:
+                    if self.pipeline['EX']['RS'] == x:
+                        RS = self.buffReg[self.pipeline['EX']['RS']]
+                        break
+                    else:
+                        RS = self.Reg[self.pipeline['EX']['RS']]
+            else:
+                RS = self.Reg[self.pipeline['EX']['RS']]
+
+            if self.pipeline['EX']['Stall'] == 'F':
+                for x in self.tempRegList:
+                    if self.pipeline['EX']['RT'] == x:
+                        RT = self.buffReg[self.pipeline['EX']['RT']]
+                        break
+                    else:
+                        RT = self.Reg[self.pipeline['EX']['RT']]
+            else:
+                RT = self.Reg[self.pipeline['EX']['RT']]
+
             IMM = self.pipeline['EX']['IMM']
             if RS !=0:
                 RS = int(RS, 2)
@@ -247,8 +275,30 @@ class CPU:
 
         if self.pipeline['EX']['Type'] == 'R':
             #get values
-            RS = self.Reg[self.pipeline['EX']['RS']]
-            RT = self.Reg[self.pipeline['EX']['RT']]
+            if self.pipeline['EX']['Stall'] == 'F':
+                for x in self.tempRegList:
+                    if self.pipeline['EX']['RS'] == x:
+                        print("1")
+                        RS = self.buffReg[self.pipeline['EX']['RS']]
+                        break
+                    else:
+                        print("2")
+                        RS = self.Reg[self.pipeline['EX']['RS']]
+            else:
+                print("3")
+                print(self.pipeline['EX'])
+                RS = self.Reg[self.pipeline['EX']['RS']]
+
+            if self.pipeline['EX']['Stall'] == 'F':
+                for x in self.tempRegList:
+                    if self.pipeline['EX']['RT'] == x:
+                        RT = self.buffReg[self.pipeline['EX']['RT']]
+                        break
+                    else:
+                        RT = self.Reg[self.pipeline['EX']['RT']]
+            else:
+                RT = self.Reg[self.pipeline['EX']['RT']]
+
             if RS !=0:
                 if RS[0] == 1:
                     RS = int(RS, 2)
@@ -286,7 +336,15 @@ class CPU:
                 self.pipeline['EX']['Answer'] = self.XOR(self.Reg[self.pipeline['EX']['RS']],self.Reg[self.pipeline['EX']['RT']])
                 return
         else:
-            RS = self.Reg[self.pipeline['EX']['RS']]
+            if self.pipeline['EX']['Stall'] == 'F':
+                for x in self.tempRegList:
+                    if self.pipeline['EX']['RS'] == x:
+                        RS = self.buffReg[self.pipeline['EX']['RS']]
+                        break
+                    else:
+                        RS = self.Reg[self.pipeline['EX']['RS']]
+            else:
+                RS = self.Reg[self.pipeline['EX']['RS']]
             IMM = self.pipeline['EX']['IMM']
             if RS != 0:
                 if RS[0] == 1:
@@ -490,8 +548,8 @@ class CPU:
     def BZ(self, RS, Address):
        #print("RS: ", RS)
         if RS == 0:
-            print ("Address", Address)
-            print("PC", self.PC)
+            #print ("Address", Address)
+            #print("PC", self.PC)
             self.PC = self.PC - 3 + Address
             #Address = "{0:032b}".format(int(Address, 16))
             #self.PC = (Address -1) << 2
@@ -517,6 +575,18 @@ class CPU:
         self.flush()
         return
     
+    def checkFWD(self):
+        if self.pipeline['ID']['Stall'] == 'Y':
+            for x in self.tempRegList:
+                if self.pipeline['ID']['RS'] == x:
+                    self.pipeline['ID']['Stall'] = 'F'
+                    return
+            if self.pipeline['ID']['Type'] == 'R' or self.pipeline['ID']['OPCODE'] == 'STW':
+                for x in self.tempRegList:
+                    if self.pipeline['ID']['RT'] == x:
+                        self.pipeline['ID']['Stall'] = 'F'
+                        return
+
     def forwarding(self):
         if self.pipeline['EX']['data'] == 'x' or self.pipeline['EX']['Type'] == 'H':
             return
@@ -547,24 +617,27 @@ class CPU:
     def cycle(self):
         #MEM
         self.MEM()
-        if self.FWD == 'Y':
-            self.forMEM()
+            
         #WB
         if self.WB() == 'H':
             self.fileName2.writelines(self.memory)
             self.fileName2.close()
             self.ConCount = self.ConCount + 1
+            self.PC=self.PC - 4
             return 'H'
+        
         #EX
         self.EX()
         if self.FWD == 'Y':
             self.forwarding()
+            self.forMEM()
         #ID
         self.ID()
+        self.checkFWD()
         #increment pipeline
         self.pipeline['WB'] = self.pipeline['MEM']
         self.pipeline['MEM'] = self.pipeline['EX']
-        if self.pipeline['ID']['Stall'] == 'Y':
+        if self.pipeline['ID']['Stall'] != 'N' and self.pipeline['ID']['Stall'] != 'F':
             self.pipeline['EX'] = {'data': 'x', 'Type': 'x', 'OPCODE':'x', 'RS': 'x', 'RT': 'x', 'RD': 'x', 'IMM':'x', 'Answer': 'x',  'Stall': 'N'}
             return
         self.pipeline['EX'] = self.pipeline['ID']
