@@ -239,11 +239,14 @@ class CPU:
                 for x in self.tempRegList:
                     if self.pipeline['EX']['RS'] == x:
                         RS = self.buffReg[self.pipeline['EX']['RS']]
+                        print("RS1 ", RS)
                         break
                     else:
                         RS = self.Reg[self.pipeline['EX']['RS']]
+                        print("RS2 ", RS)
             else:
                 RS = self.Reg[self.pipeline['EX']['RS']]
+                print("RS3 ", RS)
 
             if self.pipeline['EX']['Stall'] == 'F':
                 for x in self.tempRegList:
