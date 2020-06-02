@@ -23,18 +23,10 @@ processor = pl.CPU(fileName,forwarding)
 
 #processor.printData()
 
-#finite test
-'''
-for i in range(20):
-    processor.cycle()
-    processor.printData()
-'''
-
-
 #waiting for halt
 
 while processor.cycle() != 'H':
-    processor.printData()
+    #processor.printData()
     continue
 
 print("***********************************************\nRegisters: \n")

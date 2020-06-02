@@ -46,11 +46,9 @@ class CPU:
     def printData(self):
         printPC = self.PC << 2
         print("PC: ",printPC)
-        print("Register Contents: ")
+        #print("Register Contents: ")
         #self.printReg()
-        print(" BUFF Register Contents: ")
-        self.printbuffReg()
-        print("Registers buff: ", self.tempRegList)
+        #print("Registers buff: ", self.tempRegList)
         print("Taken Registers: ",self.destRegList)
         for stage in self.pipeline:
             print(self.pipeline[stage])
@@ -233,7 +231,6 @@ class CPU:
 
     #execute Instruction
     def EX(self):
-        print("In Ex")
         if self.pipeline['EX']['data'] == 'x':
             return
         if self.pipeline['EX']['Type'] == 'H':
@@ -245,11 +242,9 @@ class CPU:
                 for x in self.tempRegList:
                     if self.pipeline['EX']['RS'] == x:
                         RS = self.buffReg[self.pipeline['EX']['RS']]
-                        print("RS1 ", RS)
                         break
                     else:
                         RS = self.Reg[self.pipeline['EX']['RS']]
-                        print("RS2 ", RS)
                 try:
                     for x in self.tempRegList:
                         if self.pipeline['EX']['RS'] == x:
@@ -261,7 +256,6 @@ class CPU:
                     print("continue stall")
             else:
                 RS = self.Reg[self.pipeline['EX']['RS']]
-                print("RS3 ", RS)
 
             if self.pipeline['EX']['Stall'] == 'F':
                 try:
@@ -290,25 +284,18 @@ class CPU:
                 return
 
         if self.pipeline['EX']['Type'] == 'R':
-            print("IN R")
             #get values
             if self.pipeline['EX']['Stall'] == 'F':
-                print("Found F")
                 try:
                     for x in self.tempRegList:
-                        print(self.pipeline['EX']['RS'])
                         if self.pipeline['EX']['RS'] == x:
-                            print("1")
                             RS = self.buffReg[self.pipeline['EX']['RS']]
                             break
                         else:
-                            print("2")
                             RS = self.Reg[self.pipeline['EX']['RS']]
                 except:
                     print("continue stall")
             else:
-                print("3")
-                print(self.pipeline['EX'])
                 RS = self.Reg[self.pipeline['EX']['RS']]
 
             if self.pipeline['EX']['Stall'] == 'F':
@@ -353,12 +340,10 @@ class CPU:
             if self.pipeline['EX']['Stall'] == 'F':
                 try:
                     for x in self.tempRegList:
-                        print("Forward")
                         if self.pipeline['EX']['RS'] == x:
                             RS = self.buffReg[self.pipeline['EX']['RS']]
                             break
                         else:
-                            print("No FOrward")
                             RS = self.Reg[self.pipeline['EX']['RS']]
                 except:
                     print("continue stall")
@@ -379,7 +364,6 @@ class CPU:
                 self.pipeline['EX']['Answer'] = self.MULI(RS,IMM)
                 return
             if self.pipeline['EX']['OPCODE'] == 'ANDI':
-                print(RS)
                 self.LogCount =  self.LogCount + 1
                 self.pipeline['EX']['Answer'] = self.ANDI(RS,IMM)
                 return
@@ -789,7 +773,7 @@ def main():
     
     for i in range(1000):
         test.cycle()
-        print(test.printData())
+        test.printData()
     
 
 if __name__ == "__main__":
