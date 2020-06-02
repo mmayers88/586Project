@@ -11,6 +11,7 @@ class CPU:
     buffReg = [0 for i in range(32)]
     destRegList = []
     tempRegList = []
+    storeList = []
     MemCount = 0
     AriCount = 0
     LogCount = 0
@@ -37,6 +38,10 @@ class CPU:
                 print( x, self.buffReg[x], int(self.buffReg[x],2))
             except:
                 print(x, self.buffReg[x], self.buffReg[x])
+
+    def printMEMchange(self):
+        for x in self.storeList:
+            print("\t",x[0],':',x[1],'=',int(x[1],16))
 
     def printData(self):
         printPC = self.PC << 2
@@ -208,14 +213,14 @@ class CPU:
             if self.pipeline['ID']['RS'] == x:
                 self.pipeline['ID']['Stall'] = 'Y'
                 self.stalls = self.stalls + 1
-               #print("STALL")
+                #print("STALL")
                 return
         if self.pipeline['ID']['Type'] == 'R' or self.pipeline['ID']['OPCODE'] == 'STW':
             for x in self.destRegList:
                 if self.pipeline['ID']['RT'] == x:
                     self.pipeline['ID']['Stall'] = 'Y'
                     self.stalls = self.stalls + 1
-                   #print("STALL")
+                    #print("STALL")
                     return
         self.pipeline['ID']['Stall'] = 'N'
         if self.pipeline['ID']['Type'] == 'R':
@@ -237,7 +242,6 @@ class CPU:
         if self.pipeline['EX']['OPCODE'] == 'BEQ' or self.pipeline['EX']['OPCODE'] == 'BZ' or self.pipeline['EX']['OPCODE'] == 'JR':
 
             if self.pipeline['EX']['Stall'] == 'F':
-#<<<<<<< HEAD
                 for x in self.tempRegList:
                     if self.pipeline['EX']['RS'] == x:
                         RS = self.buffReg[self.pipeline['EX']['RS']]
@@ -246,7 +250,6 @@ class CPU:
                     else:
                         RS = self.Reg[self.pipeline['EX']['RS']]
                         print("RS2 ", RS)
-#=======
                 try:
                     for x in self.tempRegList:
                         if self.pipeline['EX']['RS'] == x:
@@ -256,7 +259,6 @@ class CPU:
                             RS = self.Reg[self.pipeline['EX']['RS']]
                 except:
                     print("continue stall")
-#>>>>>>> 30eb6060168012e4e0daefc566729ba678358646
             else:
                 RS = self.Reg[self.pipeline['EX']['RS']]
                 print("RS3 ", RS)
@@ -420,6 +422,8 @@ class CPU:
             #the data below will need to be written back to memory
            #print("Data Store: ", "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)))
             self.memory[Address] = "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)) + '\n'
+            storeBack = (Address << 2,"{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)))
+            self.storeList.append(storeBack)
         return
 
     #write back instruction
@@ -661,24 +665,44 @@ class CPU:
         return
     
     def checkFWD(self):
+        a = 0
+        b = 0
+        c = 0
+        d = 0
         if self.pipeline['ID']['Stall'] == 'Y':
             for x in self.tempRegList:
                 if self.pipeline['ID']['RS'] == x:
-                    self.pipeline['ID']['Stall'] = 'F'
-                    if self.pipeline['ID']['Type'] == 'R':
-                        self.destRegList.append(self.pipeline['ID']['RD'])
-                    if self.pipeline['ID']['OPCODE'][-1] == 'I' or self.pipeline['ID']['OPCODE'] == 'LDW':
-                        self.destRegList.append(self.pipeline['ID']['RT'])    
-                    return
+                    a = 1
+                    break
+            for x in self.destRegList:
+                if self.pipeline['ID']['RS'] == x:
+                    b = 1
+                    break
+            if a ^ b != 0:
+                return
+            else:
+                e = 1
             if self.pipeline['ID']['Type'] == 'R' or self.pipeline['ID']['OPCODE'] == 'STW':
                 for x in self.tempRegList:
                     if self.pipeline['ID']['RT'] == x:
-                        self.pipeline['ID']['Stall'] = 'F'
-                        if self.pipeline['ID']['Type'] == 'R':
-                            self.destRegList.append(self.pipeline['ID']['RD'])
-                        if self.pipeline['ID']['OPCODE'][-1] == 'I' or self.pipeline['ID']['OPCODE'] == 'LDW':
-                            self.destRegList.append(self.pipeline['ID']['RT'])
-                        return
+                        c = 1
+                        break
+                for x in self.destRegList:
+                    if self.pipeline['ID']['RT'] == x:
+                        d = 1
+                if c ^ d != 0:
+                    return
+                else:
+                    f = 1                      
+            else:
+                f = 1
+            if e & f == 1:
+                self.pipeline['ID']['Stall'] = 'F'
+                self.stalls= self.stalls -1 
+                if self.pipeline['ID']['Type'] == 'R':
+                    self.destRegList.append(self.pipeline['ID']['RD'])
+                if self.pipeline['ID']['OPCODE'][-1] == 'I' or self.pipeline['ID']['OPCODE'] == 'LDW':
+                    self.destRegList.append(self.pipeline['ID']['RT'])
         
     def remFWD(self):
         if self.pipeline['EX']['Stall'] == 'F':
@@ -746,7 +770,7 @@ class CPU:
         self.pipeline['WB'] = self.pipeline['MEM']
         self.pipeline['MEM'] = self.pipeline['EX']
         if self.pipeline['ID']['Stall'] != 'N' and self.pipeline['ID']['Stall'] != 'F':
-            self.pipeline['EX'] = {'data': 'x', 'Type': 'x', 'OPCODE':'x', 'RS': 'x', 'RT': 'x', 'RD': 'x', 'IMM':'x', 'Answer': 'x',  'Stall': 'N'}
+            self.pipeline['EX'] = {'data': 'x', 'Type': 'x', 'OPCODE':'NOP', 'RS': 'x', 'RT': 'x', 'RD': 'x', 'IMM':'x', 'Answer': 'x',  'Stall': 'N'}
             return
         self.pipeline['EX'] = self.pipeline['ID']
         self.pipeline['ID'] = self.pipeline['IF']

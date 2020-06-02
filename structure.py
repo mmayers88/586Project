@@ -49,3 +49,6 @@ print("Logical Instructions: ",processor.LogCount)
 print("Memory Access Instructions: ",processor.MemCount)
 print("Control Flow Instructions: ",processor.ConCount)
 print("Stalls: ",processor.stalls)
+
+print("\nMemChanged: ")
+processor.printMEMchange()
