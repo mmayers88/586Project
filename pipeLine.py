@@ -208,14 +208,14 @@ class CPU:
             if self.pipeline['ID']['RS'] == x:
                 self.pipeline['ID']['Stall'] = 'Y'
                 self.stalls = self.stalls + 1
-               #print("STALL")
+                #print("STALL")
                 return
         if self.pipeline['ID']['Type'] == 'R' or self.pipeline['ID']['OPCODE'] == 'STW':
             for x in self.destRegList:
                 if self.pipeline['ID']['RT'] == x:
                     self.pipeline['ID']['Stall'] = 'Y'
                     self.stalls = self.stalls + 1
-                   #print("STALL")
+                    #print("STALL")
                     return
         self.pipeline['ID']['Stall'] = 'N'
         if self.pipeline['ID']['Type'] == 'R':
@@ -653,6 +653,7 @@ class CPU:
             for x in self.tempRegList:
                 if self.pipeline['ID']['RS'] == x:
                     self.pipeline['ID']['Stall'] = 'F'
+                    self.stalls = self.stalls - 1
                     if self.pipeline['ID']['Type'] == 'R':
                         self.destRegList.append(self.pipeline['ID']['RD'])
                     if self.pipeline['ID']['OPCODE'][-1] == 'I' or self.pipeline['ID']['OPCODE'] == 'LDW':
@@ -662,6 +663,7 @@ class CPU:
                 for x in self.tempRegList:
                     if self.pipeline['ID']['RT'] == x:
                         self.pipeline['ID']['Stall'] = 'F'
+                        self.stalls = self.stalls - 1
                         if self.pipeline['ID']['Type'] == 'R':
                             self.destRegList.append(self.pipeline['ID']['RD'])
                         if self.pipeline['ID']['OPCODE'][-1] == 'I' or self.pipeline['ID']['OPCODE'] == 'LDW':
@@ -734,7 +736,7 @@ class CPU:
         self.pipeline['WB'] = self.pipeline['MEM']
         self.pipeline['MEM'] = self.pipeline['EX']
         if self.pipeline['ID']['Stall'] != 'N' and self.pipeline['ID']['Stall'] != 'F':
-            self.pipeline['EX'] = {'data': 'x', 'Type': 'x', 'OPCODE':'x', 'RS': 'x', 'RT': 'x', 'RD': 'x', 'IMM':'x', 'Answer': 'x',  'Stall': 'N'}
+            self.pipeline['EX'] = {'data': 'x', 'Type': 'x', 'OPCODE':'NOP', 'RS': 'x', 'RT': 'x', 'RD': 'x', 'IMM':'x', 'Answer': 'x',  'Stall': 'N'}
             return
         self.pipeline['EX'] = self.pipeline['ID']
         self.pipeline['ID'] = self.pipeline['IF']
