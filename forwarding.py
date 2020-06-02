@@ -4,13 +4,13 @@ def checkFWD(self):
         for x in self.tempRegList:
             if self.pipeline['ID']['RS'] == x:
                 self.pipeline['ID']['Stall'] = 'F'
-                return
+    
         if self.pipeline['ID']['Type'] == 'R' or self.pipeline['ID']['OPCODE'] == 'STW':
             for x in self.tempRegList:
                 if self.pipeline['ID']['RT'] == x:
                     self.pipeline['ID']['Stall'] = 'F'
                     return
-
+        
 
 # change EX stage to grab correct forwarding data
 if self.pipeline['EX']['Stall'] == 'F':

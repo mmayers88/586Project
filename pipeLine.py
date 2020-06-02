@@ -237,16 +237,6 @@ class CPU:
         if self.pipeline['EX']['OPCODE'] == 'BEQ' or self.pipeline['EX']['OPCODE'] == 'BZ' or self.pipeline['EX']['OPCODE'] == 'JR':
 
             if self.pipeline['EX']['Stall'] == 'F':
-<<<<<<< HEAD
-                for x in self.tempRegList:
-                    if self.pipeline['EX']['RS'] == x:
-                        RS = self.buffReg[self.pipeline['EX']['RS']]
-                        print("RS1 ", RS)
-                        break
-                    else:
-                        RS = self.Reg[self.pipeline['EX']['RS']]
-                        print("RS2 ", RS)
-=======
                 try:
                     for x in self.tempRegList:
                         if self.pipeline['EX']['RS'] == x:
@@ -256,7 +246,6 @@ class CPU:
                             RS = self.Reg[self.pipeline['EX']['RS']]
                 except:
                     print("continue stall")
->>>>>>> 30eb6060168012e4e0daefc566729ba678358646
             else:
                 RS = self.Reg[self.pipeline['EX']['RS']]
                 print("RS3 ", RS)
@@ -661,26 +650,44 @@ class CPU:
         return
     
     def checkFWD(self):
+        a = 0
+        b = 0
+        c = 0
+        d = 0
         if self.pipeline['ID']['Stall'] == 'Y':
             for x in self.tempRegList:
                 if self.pipeline['ID']['RS'] == x:
-                    self.pipeline['ID']['Stall'] = 'F'
-                    self.stalls = self.stalls - 1
-                    if self.pipeline['ID']['Type'] == 'R':
-                        self.destRegList.append(self.pipeline['ID']['RD'])
-                    if self.pipeline['ID']['OPCODE'][-1] == 'I' or self.pipeline['ID']['OPCODE'] == 'LDW':
-                        self.destRegList.append(self.pipeline['ID']['RT'])    
-                    return
+                    a = 1
+                    break
+            for x in self.destRegList:
+                if self.pipeline['ID']['RS'] == x:
+                    b = 1
+                    break
+            if a ^ b != 0:
+                return
+            else:
+                e = 1
             if self.pipeline['ID']['Type'] == 'R' or self.pipeline['ID']['OPCODE'] == 'STW':
                 for x in self.tempRegList:
                     if self.pipeline['ID']['RT'] == x:
-                        self.pipeline['ID']['Stall'] = 'F'
-                        self.stalls = self.stalls - 1
-                        if self.pipeline['ID']['Type'] == 'R':
-                            self.destRegList.append(self.pipeline['ID']['RD'])
-                        if self.pipeline['ID']['OPCODE'][-1] == 'I' or self.pipeline['ID']['OPCODE'] == 'LDW':
-                            self.destRegList.append(self.pipeline['ID']['RT'])
-                        return
+                        c = 1
+                        break
+                for x in self.destRegList:
+                    if self.pipeline['ID']['RT'] == x:
+                        d = 1
+                if c ^ d != 0:
+                    return
+                else:
+                    f = 1                      
+            else:
+                f = 1
+            if e & f == 1:
+                self.pipeline['ID']['Stall'] = 'F'
+                self.stalls= self.stalls -1 
+                if self.pipeline['ID']['Type'] == 'R':
+                    self.destRegList.append(self.pipeline['ID']['RD'])
+                if self.pipeline['ID']['OPCODE'][-1] == 'I' or self.pipeline['ID']['OPCODE'] == 'LDW':
+                    self.destRegList.append(self.pipeline['ID']['RT'])
         
     def remFWD(self):
         if self.pipeline['EX']['Stall'] == 'F':
