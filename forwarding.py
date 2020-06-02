@@ -1,4 +1,4 @@
-#check ID to see if REG data has been forwarded
+# check ID to see if REG data has been forwarded
 def checkFWD(self):
     if self.pipeline['ID']['Stall'] == 'Y':
         for x in self.tempRegList:
@@ -11,7 +11,8 @@ def checkFWD(self):
                     self.pipeline['ID']['Stall'] = 'F'
                     return
 
-#change EX stage to grab correct forwarding data
+
+# change EX stage to grab correct forwarding data
 if self.pipeline['EX']['Stall'] == 'F':
     for x in self.tempRegList:
         if self.pipeline['EX']['RS'] == x:
