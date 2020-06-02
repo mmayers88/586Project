@@ -11,6 +11,7 @@ class CPU:
     buffReg = [0 for i in range(32)]
     destRegList = []
     tempRegList = []
+    storeList = []
     MemCount = 0
     AriCount = 0
     LogCount = 0
@@ -37,6 +38,10 @@ class CPU:
                 print( x, self.buffReg[x], int(self.buffReg[x],2))
             except:
                 print(x, self.buffReg[x], self.buffReg[x])
+
+    def printMEMchange(self):
+        for x in self.storeList:
+            print("\t",x[0],':',x[1],'=',int(x[1],16))
 
     def printData(self):
         printPC = self.PC << 2
@@ -409,6 +414,8 @@ class CPU:
             #the data below will need to be written back to memory
            #print("Data Store: ", "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)))
             self.memory[Address] = "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)) + '\n'
+            storeBack = (Address,"{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)))
+            self.storeList.append(storeBack)
         return
 
     #write back instruction
