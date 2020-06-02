@@ -237,7 +237,7 @@ class CPU:
         if self.pipeline['EX']['OPCODE'] == 'BEQ' or self.pipeline['EX']['OPCODE'] == 'BZ' or self.pipeline['EX']['OPCODE'] == 'JR':
 
             if self.pipeline['EX']['Stall'] == 'F':
-<<<<<<< HEAD
+#<<<<<<< HEAD
                 for x in self.tempRegList:
                     if self.pipeline['EX']['RS'] == x:
                         RS = self.buffReg[self.pipeline['EX']['RS']]
@@ -246,7 +246,7 @@ class CPU:
                     else:
                         RS = self.Reg[self.pipeline['EX']['RS']]
                         print("RS2 ", RS)
-=======
+#=======
                 try:
                     for x in self.tempRegList:
                         if self.pipeline['EX']['RS'] == x:
@@ -256,7 +256,7 @@ class CPU:
                             RS = self.Reg[self.pipeline['EX']['RS']]
                 except:
                     print("continue stall")
->>>>>>> 30eb6060168012e4e0daefc566729ba678358646
+#>>>>>>> 30eb6060168012e4e0daefc566729ba678358646
             else:
                 RS = self.Reg[self.pipeline['EX']['RS']]
                 print("RS3 ", RS)
