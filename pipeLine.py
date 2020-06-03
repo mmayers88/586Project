@@ -17,6 +17,8 @@ class CPU:
     LogCount = 0
     ConCount = 0
     stalls = 0
+    cycleC = 0
+    instructionList = []
     def __init__(self, fileName, forwarding = 'N'):
         self.FWD = forwarding
         self.fileWord = fileName
@@ -52,6 +54,7 @@ class CPU:
         print("Taken Registers: ",self.destRegList)
         for stage in self.pipeline:
             print(self.pipeline[stage])
+        print("Cycle: ",self.cycleC)
         return
     
     def showMEM(self):
@@ -233,6 +236,7 @@ class CPU:
     def EX(self):
         if self.pipeline['EX']['data'] == 'x':
             return
+        self.instructionList.append(self.pipeline['EX'])
         if self.pipeline['EX']['Type'] == 'H':
             return
         #use opcodes to do different things
@@ -281,6 +285,7 @@ class CPU:
                 return
             if self.pipeline['EX']['OPCODE'] == 'JR':
                 self.JR(RS)
+                print(self.PC)
                 return
 
         if self.pipeline['EX']['Type'] == 'R':
@@ -424,18 +429,18 @@ class CPU:
         if self.pipeline['WB']['Type'] == 'R':
             Answer = self.pipeline['WB']['Answer']
             if Answer < 0:
-                Answer = '{0:015b}'.format(Answer)
+                Answer = '{0:031b}'.format(Answer)
                 Answer = '1' + Answer[1:]
             else:
-                Answer = '{0:016b}'.format(Answer)
+                Answer = '{0:032b}'.format(Answer)
             self.Reg[self.pipeline['WB']['RD']] = Answer
         else:
             Answer = self.pipeline['WB']['Answer']
             if Answer < 0:
-                Answer = '{0:015b}'.format(Answer)
+                Answer = '{0:031b}'.format(Answer)
                 Answer = '1' + Answer[1:]
             else:
-                Answer = '{0:016b}'.format(Answer)
+                Answer = '{0:032b}'.format(Answer)
             self.Reg[self.pipeline['WB']['RT']]= Answer
 
         #do write back to register step then clear the register list
@@ -509,6 +514,8 @@ class CPU:
                 RT = -1 * RT
             else:
                 RT = int(RT, 2)
+        print(RS)
+        print(RT)
         answer = RS - RT
         return answer
 
@@ -666,11 +673,7 @@ class CPU:
 
     def BEQ(self, RS, RT, IMM):
         if RS !=0:
-            if RS[0] == '1':
-                RS = int(RS[1:], 2)
-                RS = -1 * RS
-            else:
-                RS = int(RS, 2)
+            RS = int(RS, 2)
         if RT !=0:
             RT = int(RT, 2)
         if IMM !=0:
@@ -684,15 +687,12 @@ class CPU:
 
     def JR(self,RS):
         if RS !=0:
-            if RS[0] == '1':
-                RS = int(RS[1:], 2)
-                RS = -1 * RS
-            else:
-                RS = int(RS, 2)
+            RS = int(RS, 2)
         jumpTo = RS >> 2
         #jumpTo = RS
        #print("JumpTo: ",jumpTo)
         self.PC = jumpTo
+        print(self.PC)
         self.flush()
         return
     
@@ -756,9 +756,21 @@ class CPU:
             ##only opcodes that return data matter
             return
         if self.pipeline['EX']['Type'] == 'R':
-            self.buffReg[self.pipeline['EX']['RD']] = '{0:016b}'.format(self.pipeline['EX']['Answer'])
+            Answer = self.pipeline['EX']['Answer']
+            if Answer < 0:
+                Answer = '{0:031b}'.format(Answer)
+                Answer = '1' + Answer[1:]
+            else:
+                Answer = '{0:032b}'.format(Answer)
+            self.buffReg[self.pipeline['EX']['RD']] = Answer
         else:
-            self.buffReg[self.pipeline['EX']['RT']]= '{0:016b}'.format(self.pipeline['EX']['Answer'])
+            Answer = self.pipeline['EX']['Answer']
+            if Answer < 0:
+                Answer = '{0:031b}'.format(Answer)
+                Answer = '1' + Answer[1:]
+            else:
+                Answer = '{0:032b}'.format(Answer)
+            self.buffReg[self.pipeline['EX']['RT']]= Answer
 
         
         if self.pipeline['EX']['OPCODE'][-1] == 'I':
@@ -771,12 +783,19 @@ class CPU:
         if self.pipeline['MEM']['data'] == 'x' or self.pipeline['MEM']['Type'] == 'H':
             return
         if self.pipeline['MEM']['OPCODE'] == 'LDW':
-            self.buffReg[self.pipeline['MEM']['RT']]= '{0:016b}'.format(self.pipeline['MEM']['Answer'])
+            Answer = self.pipeline['MEM']['Answer']
+            if Answer < 0:
+                Answer = '{0:031b}'.format(Answer)
+                Answer = '1' + Answer[1:]
+            else:
+                Answer = '{0:032b}'.format(Answer)
+            self.buffReg[self.pipeline['MEM']['RT']]= Answer
             self.tempRegList.append(self.pipeline['MEM']['RT'])
             return
         return
     #this will be the "main" function basically
     def cycle(self):
+        self.cycleC=self.cycleC +1
         #MEM
         self.MEM()
             
