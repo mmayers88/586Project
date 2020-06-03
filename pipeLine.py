@@ -46,8 +46,8 @@ class CPU:
     def printData(self):
         printPC = self.PC << 2
         print("PC: ",printPC)
-        #print("Register Contents: ")
-        #self.printReg()
+        print("Register Contents: ")
+        self.printReg()
         #print("Registers buff: ", self.tempRegList)
         print("Taken Registers: ",self.destRegList)
         for stage in self.pipeline:
@@ -395,9 +395,10 @@ class CPU:
         #do load or store
         Address = int(self.pipeline['MEM']['Answer'],2)
         Address = Address >> 2
-       #print("Line: ", Address)
+        print("Line: ", Address)
         if self.pipeline['MEM']['OPCODE'] == 'LDW':
            #print("Do Load")
+            print(self.pipeline['MEM'])
             bina = "{0:032b}".format(int(self.memory[Address],16))
            #print("Load Data: ",bina)
             self.pipeline['MEM']['Answer'] = int(bina,2)
@@ -421,9 +422,21 @@ class CPU:
             #these write nothing back
             return
         if self.pipeline['WB']['Type'] == 'R':
-            self.Reg[self.pipeline['WB']['RD']] = '{0:032b}'.format(self.pipeline['WB']['Answer'])
+            Answer = self.pipeline['WB']['Answer']
+            if Answer < 0:
+                Answer = '{0:015b}'.format(Answer)
+                Answer = '1' + Answer[1:]
+            else:
+                Answer = '{0:016b}'.format(Answer)
+            self.Reg[self.pipeline['WB']['RD']] = Answer
         else:
-            self.Reg[self.pipeline['WB']['RT']]= '{0:032b}'.format(self.pipeline['WB']['Answer'])
+            Answer = self.pipeline['WB']['Answer']
+            if Answer < 0:
+                Answer = '{0:015b}'.format(Answer)
+                Answer = '1' + Answer[1:]
+            else:
+                Answer = '{0:016b}'.format(Answer)
+            self.Reg[self.pipeline['WB']['RT']]= Answer
 
         #do write back to register step then clear the register list
         if self.pipeline['WB']['OPCODE'] == 'LDW':
@@ -451,14 +464,14 @@ class CPU:
     #EX functions
     def ADD(self, RS, RT):
         if RS != 0 :
-            if RS[0] == 1:
-                RS = int(RS, 2)
+            if RS[0] == '1':
+                RS = int(RS[1:], 2)
                 RS = -1 * RS
             else:
                 RS = int(RS, 2)
         if RT != 0:
-            if RT[0] == 1:
-                RT = int(RT, 2)
+            if RT[0] == '1':
+                RT = int(RT[1:], 2)
                 RT = -1 * RT
             else:
                 RT = int(RT, 2)
@@ -467,30 +480,32 @@ class CPU:
 
     def ADDI(self,RS,IMM):
         if RS != 0:
-            if RS[0] == 1:
-                RS = int(RS, 2)
+            if RS[0] == '1':
+                RS = int(RS[1:], 2)
                 RS = -1 * RS
             else:
                 RS = int(RS, 2)
-        if IMM[0] == 1:
-            IMM = int(IMM, 2)
+        if IMM[0] == '1':
+            IMM = int(IMM[1:], 2)
             IMM = -1 * IMM
         else:
             IMM = int(IMM, 2)
+        print(RS)
+        print(IMM)
         answer = RS + IMM
        #print("Answer: ", answer)
         return answer
 
     def SUB(self, RS, RT):
         if RS != 0 :
-            if RS[0] == 1:
-                RS = int(RS, 2)
+            if RS[0] == '1':
+                RS = int(RS[1:], 2)
                 RS = -1 * RS
             else:
                 RS = int(RS, 2)
         if RT != 0:
-            if RT[0] == 1:
-                RT = int(RT, 2)
+            if RT[0] == '1':
+                RT = int(RT[1:], 2)
                 RT = -1 * RT
             else:
                 RT = int(RT, 2)
@@ -499,29 +514,31 @@ class CPU:
 
     def SUBI(self, RS, IMM):
         if RS != 0:
-            if RS[0] == 1:
-                RS = int(RS, 2)
+            if RS[0] == '1':
+                RS = int(RS[1:], 2)
                 RS = -1 * RS
             else:
                 RS = int(RS, 2)
-        if IMM[0] == 1:
-            IMM = int(IMM, 2)
+        if IMM[0] == '1':
+            IMM = int(IMM[1:], 2)
             IMM = -1 * IMM
         else:
             IMM = int(IMM, 2)
+        print(RS)
+        print(IMM)
         answer = RS - IMM
         return answer
 
     def MUL(self, RS, RT):
         if RS != 0 :
-            if RS[0] == 1:
-                RS = int(RS, 2)
+            if RS[0] == '1':
+                RS = int(RS[1:], 2)
                 RS = -1 * RS
             else:
                 RS = int(RS, 2)
         if RT != 0:
-            if RT[0] == 1:
-                RT = int(RT, 2)
+            if RT[0] == '1':
+                RT = int(RT[1:], 2)
                 RT = -1 * RT
             else:
                 RT = int(RT, 2)
@@ -530,13 +547,13 @@ class CPU:
 
     def MULI(self, RS, IMM):
         if RS != 0:
-            if RS[0] == 1:
-                RS = int(RS, 2)
+            if RS[0] == '1':
+                RS = int(RS[1:], 2)
                 RS = -1 * RS
             else:
                 RS = int(RS, 2)
-        if IMM[0] == 1:
-            IMM = int(IMM, 2)
+        if IMM[0] == '1':
+            IMM = int(IMM[1:], 2)
             IMM = -1 * IMM
         else:
             IMM = int(IMM, 2)
@@ -585,36 +602,62 @@ class CPU:
         return Answer
 
     def LDW(self,RS, IMM):
-       #print(RS)
+        print(RS)
         if RS != 0:
-            RS = int(RS, 2)
-        if IMM[0] == 1:
-            IMM = int(IMM, 2)
+            if RS[0] == '1':
+                RS = int(RS[1:], 2)
+                RS = -1 * RS
+            else:
+                RS = int(RS, 2)
+        if IMM[0] == '1':
+            IMM = int(IMM[1:], 2)
             IMM = -1 * IMM
         else:
             IMM = int(IMM, 2)
+        print(RS)
+        print(IMM)
         Address = RS + IMM
-        Answer = '{0:032b}'.format(Address)
+        if Address < 0:
+                Answer = '{0:015b}'.format(Address)
+                Answer = '1' + Answer[1:]
+        else:
+            Answer = '{0:016b}'.format(Address)
         return Answer
 
     def STW(self,RS, IMM):
        #print(RS)
         if RS != 0:
-            RS = int(RS, 2)
-        if IMM[0] == 1:
-            IMM = int(IMM, 2)
+            if RS[0] == '1':
+                RS = int(RS[1:], 2)
+                RS = -1 * RS
+            else:
+                RS = int(RS, 2)
+        if IMM[0] == '1':
+            IMM = int(IMM[1:], 2)
             IMM = -1 * IMM
         else:
             IMM = int(IMM, 2)
         Address = RS + IMM
-        Answer = '{0:032b}'.format(Address)
+        if Address < 0:
+                Answer = '{0:015b}'.format(Address)
+                Answer = '1' + Answer[1:]
+        else:
+            Answer = '{0:016b}'.format(Address)
         return Answer
 
     def BZ(self, RS, IMM):
         if RS !=0:
-            RS = int(RS, 2)
+            if RS[0] == '1':
+                RS = int(RS[1:], 2)
+                RS = -1 * RS
+            else:
+                RS = int(RS, 2)
         if IMM !=0:
-            IMM = int(IMM, 2)
+            if IMM[0] == '1':
+                IMM = int(IMM[1:], 2)
+                IMM = -1 * IMM
+            else:
+                IMM = int(IMM, 2)
         if RS == 0:
             #print ("Address", Address)
             #print("PC", self.PC)
@@ -626,11 +669,19 @@ class CPU:
 
     def BEQ(self, RS, RT, IMM):
         if RS !=0:
-            RS = int(RS, 2)
+            if RS[0] == '1':
+                RS = int(RS[1:], 2)
+                RS = -1 * RS
+            else:
+                RS = int(RS, 2)
         if RT !=0:
             RT = int(RT, 2)
         if IMM !=0:
-            IMM = int(IMM, 2)
+            if IMM[0] == '1':
+                IMM = int(IMM[1:], 2)
+                IMM = -1 * IMM
+            else:
+                IMM = int(IMM, 2)
         if RS == RT:
             self.PC = self.PC - 3 + IMM
             #Address = "{0:032b}".format(int(Address,16))
@@ -640,7 +691,11 @@ class CPU:
 
     def JR(self,RS):
         if RS !=0:
-            RS = int(RS, 2)
+            if RS[0] == '1':
+                RS = int(RS[1:], 2)
+                RS = -1 * RS
+            else:
+                RS = int(RS, 2)
         jumpTo = RS >> 2
         #jumpTo = RS
        #print("JumpTo: ",jumpTo)
@@ -708,9 +763,9 @@ class CPU:
             ##only opcodes that return data matter
             return
         if self.pipeline['EX']['Type'] == 'R':
-            self.buffReg[self.pipeline['EX']['RD']] = '{0:032b}'.format(self.pipeline['EX']['Answer'])
+            self.buffReg[self.pipeline['EX']['RD']] = '{0:016b}'.format(self.pipeline['EX']['Answer'])
         else:
-            self.buffReg[self.pipeline['EX']['RT']]= '{0:032b}'.format(self.pipeline['EX']['Answer'])
+            self.buffReg[self.pipeline['EX']['RT']]= '{0:016b}'.format(self.pipeline['EX']['Answer'])
 
         
         if self.pipeline['EX']['OPCODE'][-1] == 'I':
@@ -723,7 +778,7 @@ class CPU:
         if self.pipeline['MEM']['data'] == 'x' or self.pipeline['MEM']['Type'] == 'H':
             return
         if self.pipeline['MEM']['OPCODE'] == 'LDW':
-            self.buffReg[self.pipeline['MEM']['RT']]= '{0:032b}'.format(self.pipeline['MEM']['Answer'])
+            self.buffReg[self.pipeline['MEM']['RT']]= '{0:016b}'.format(self.pipeline['MEM']['Answer'])
             self.tempRegList.append(self.pipeline['MEM']['RT'])
             return
         return
