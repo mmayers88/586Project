@@ -609,11 +609,7 @@ class CPU:
                 RS = -1 * RS
             else:
                 RS = int(RS, 2)
-        if IMM[0] == '1':
-            IMM = int(IMM[1:], 2)
-            IMM = -1 * IMM
-        else:
-            IMM = int(IMM, 2)
+        IMM = int(IMM, 2)
         print(RS)
         print(IMM)
         Address = RS + IMM
@@ -622,6 +618,9 @@ class CPU:
                 Answer = '1' + Answer[1:]
         else:
             Answer = '{0:016b}'.format(Address)
+        if len(Answer) > 16:
+            cut = len(Answer)-16
+            Answer = Answer[cut:]
         return Answer
 
     def STW(self,RS, IMM):
@@ -632,17 +631,18 @@ class CPU:
                 RS = -1 * RS
             else:
                 RS = int(RS, 2)
-        if IMM[0] == '1':
-            IMM = int(IMM[1:], 2)
-            IMM = -1 * IMM
-        else:
-            IMM = int(IMM, 2)
+        IMM = int(IMM, 2)
+        print(RS)
+        print(IMM)
         Address = RS + IMM
         if Address < 0:
                 Answer = '{0:015b}'.format(Address)
                 Answer = '1' + Answer[1:]
         else:
             Answer = '{0:016b}'.format(Address)
+        if len(Answer) > 16:
+            cut = len(Answer)-16
+            Answer = Answer[cut:]
         return Answer
 
     def BZ(self, RS, IMM):
@@ -653,14 +653,11 @@ class CPU:
             else:
                 RS = int(RS, 2)
         if IMM !=0:
-            if IMM[0] == '1':
-                IMM = int(IMM[1:], 2)
-                IMM = -1 * IMM
-            else:
-                IMM = int(IMM, 2)
+            IMM = int(IMM, 2)
         if RS == 0:
             #print ("Address", Address)
             #print("PC", self.PC)
+            print(IMM)
             self.PC = self.PC - 3 + IMM
             #Address = "{0:032b}".format(int(Address, 16))
             #self.PC = (Address -1) << 2
@@ -677,11 +674,7 @@ class CPU:
         if RT !=0:
             RT = int(RT, 2)
         if IMM !=0:
-            if IMM[0] == '1':
-                IMM = int(IMM[1:], 2)
-                IMM = -1 * IMM
-            else:
-                IMM = int(IMM, 2)
+            IMM = int(IMM, 2)
         if RS == RT:
             self.PC = self.PC - 3 + IMM
             #Address = "{0:032b}".format(int(Address,16))
