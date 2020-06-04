@@ -394,6 +394,7 @@ class CPU:
             return
         #do load or store
         Address = int(self.pipeline['MEM']['Answer'],2)
+        print ("Address", Address)
         Address = Address >> 2
         print("Line: ", Address)
         if self.pipeline['MEM']['OPCODE'] == 'LDW':
@@ -659,6 +660,7 @@ class CPU:
             #print("PC", self.PC)
             print(IMM)
             self.PC = self.PC - 3 + IMM
+            print ("PC from IMM", self.PC)
             #Address = "{0:032b}".format(int(Address, 16))
             #self.PC = (Address -1) << 2
             self.flush()
