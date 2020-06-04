@@ -44,3 +44,6 @@ print("Stalls: ",processor.stalls)
 
 print("\nMemChanged: ")
 processor.printMEMchange()
+
+for x in processor.instructionList:
+    print(x)
