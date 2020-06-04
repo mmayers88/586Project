@@ -285,7 +285,7 @@ class CPU:
                 return
             if self.pipeline['EX']['OPCODE'] == 'JR':
                 self.JR(RS)
-                print(self.PC)
+               #print(self.PC)
                 return
 
         if self.pipeline['EX']['Type'] == 'R':
@@ -401,10 +401,10 @@ class CPU:
         Address = int(self.pipeline['MEM']['Answer'],2)
         print ("Address", Address)
         Address = Address >> 2
-        print("Line: ", Address)
+       #print("Line: ", Address)
         if self.pipeline['MEM']['OPCODE'] == 'LDW':
            #print("Do Load")
-            print(self.pipeline['MEM'])
+           #print(self.pipeline['MEM'])
             bina = "{0:032b}".format(int(self.memory[Address],16))
            #print("Load Data: ",bina)
             self.pipeline['MEM']['Answer'] = int(bina,2)
@@ -470,8 +470,8 @@ class CPU:
         if RS != 0:
             RS = self.BintoInt(RS)
         IMM = self.BintoInt(IMM)
-        print(RS)
-        print(IMM)
+       #print(RS)
+       #print(IMM)
         answer = RS + IMM
        #print("Answer: ", answer)
         return answer
@@ -481,8 +481,8 @@ class CPU:
             RS = self.BintoInt(RS)
         if RT != 0:
             RT = self.BintoInt(RT)
-        print(RS)
-        print(RT)
+       #print(RS)
+       #print(RT)
         answer = RS - RT
         return answer
 
@@ -490,8 +490,8 @@ class CPU:
         if RS != 0:
             RS = self.BintoInt(RS)
         IMM = self.BintoInt(IMM)
-        print(RS)
-        print(IMM)
+       #print(RS)
+       #print(IMM)
         answer = RS - IMM
         return answer
 
@@ -552,12 +552,12 @@ class CPU:
         return Answer
 
     def LDW(self,RS, IMM):
-        print(RS)
+       #print(RS)
         if RS != 0:
             RS = self.BintoInt(RS)
-        IMM = int(IMM, 2)
-        print(RS)
-        print(IMM)
+        IMM = self.BintoInt(IMM)
+       #print(RS)
+       #print(IMM)
         Address = RS + IMM
         if Address < 0:
                 Answer = '{0:015b}'.format(Address)
@@ -573,9 +573,9 @@ class CPU:
        #print(RS)
         if RS != 0:
             RS = self.BintoInt(RS)
-        IMM = int(IMM, 2)
-        print(RS)
-        print(IMM)
+        IMM = self.BintoInt(IMM)
+       #print(RS)
+       #print(IMM)
         Address = RS + IMM
         if Address < 0:
                 Answer = '{0:015b}'.format(Address)
@@ -591,11 +591,11 @@ class CPU:
         if RS !=0:
             RS = self.BintoInt(RS)
         if IMM !=0:
-            IMM = int(IMM, 2)
+            IMM = self.BintoInt(IMM)
         if RS == 0:
             #print ("Address", Address)
             #print("PC", self.PC)
-            print(IMM)
+           #print(IMM)
             self.PC = self.PC - 3 + IMM
             print ("PC from IMM", self.PC)
             #Address = "{0:032b}".format(int(Address, 16))
@@ -609,7 +609,7 @@ class CPU:
         if RT !=0:
             RT = int(RT, 2)
         if IMM !=0:
-            IMM = int(IMM, 2)
+            IMM = self.BintoInt(IMM)
         if RS == RT:
             self.PC = self.PC - 3 + IMM
             #Address = "{0:032b}".format(int(Address,16))
@@ -619,12 +619,12 @@ class CPU:
 
     def JR(self,RS):
         if RS !=0:
-            RS = int(RS, 2)
+            RS = self.BintoInt(RS)
         jumpTo = RS >> 2
         #jumpTo = RS
        #print("JumpTo: ",jumpTo)
         self.PC = jumpTo
-        print(self.PC)
+       #print(self.PC)
         self.flush()
         return
     
@@ -786,7 +786,7 @@ def main():
     test = CPU("sample_memory_image.txt")
 
 
-    print(test.printData())
+   #print(test.printData())
     
     for i in range(1000):
         test.cycle()
