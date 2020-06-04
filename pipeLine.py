@@ -427,20 +427,10 @@ class CPU:
             #these write nothing back
             return
         if self.pipeline['WB']['Type'] == 'R':
-            Answer = self.pipeline['WB']['Answer']
-            if Answer < 0:
-                Answer = '{0:031b}'.format(Answer)
-                Answer = '1' + Answer[1:]
-            else:
-                Answer = '{0:032b}'.format(Answer)
+            Answer = self.inttoBin(self.pipeline['WB']['Answer'])
             self.Reg[self.pipeline['WB']['RD']] = Answer
         else:
-            Answer = self.pipeline['WB']['Answer']
-            if Answer < 0:
-                Answer = '{0:031b}'.format(Answer)
-                Answer = '1' + Answer[1:]
-            else:
-                Answer = '{0:032b}'.format(Answer)
+            Answer = self.inttoBin(self.pipeline['WB']['Answer'])
             self.Reg[self.pipeline['WB']['RT']]= Answer
 
         #do write back to register step then clear the register list
@@ -469,32 +459,16 @@ class CPU:
     #EX functions
     def ADD(self, RS, RT):
         if RS != 0 :
-            if RS[0] == '1':
-                RS = int(RS[1:], 2)
-                RS = -1 * RS
-            else:
-                RS = int(RS, 2)
+            RS = self.BintoInt(RS)
         if RT != 0:
-            if RT[0] == '1':
-                RT = int(RT[1:], 2)
-                RT = -1 * RT
-            else:
-                RT = int(RT, 2)
+            RT = self.BintoInt(RT)
         answer = RS + RT
         return answer
 
     def ADDI(self,RS,IMM):
         if RS != 0:
-            if RS[0] == '1':
-                RS = int(RS[1:], 2)
-                RS = -1 * RS
-            else:
-                RS = int(RS, 2)
-        if IMM[0] == '1':
-            IMM = int(IMM[1:], 2)
-            IMM = -1 * IMM
-        else:
-            IMM = int(IMM, 2)
+            RS = self.BintoInt(RS)
+        IMM = self.BintoInt(IMM)
         print(RS)
         print(IMM)
         answer = RS + IMM
@@ -503,17 +477,9 @@ class CPU:
 
     def SUB(self, RS, RT):
         if RS != 0 :
-            if RS[0] == '1':
-                RS = int(RS[1:], 2)
-                RS = -1 * RS
-            else:
-                RS = int(RS, 2)
+            RS = self.BintoInt(RS)
         if RT != 0:
-            if RT[0] == '1':
-                RT = int(RT[1:], 2)
-                RT = -1 * RT
-            else:
-                RT = int(RT, 2)
+            RT = self.BintoInt(RT)
         print(RS)
         print(RT)
         answer = RS - RT
@@ -521,16 +487,8 @@ class CPU:
 
     def SUBI(self, RS, IMM):
         if RS != 0:
-            if RS[0] == '1':
-                RS = int(RS[1:], 2)
-                RS = -1 * RS
-            else:
-                RS = int(RS, 2)
-        if IMM[0] == '1':
-            IMM = int(IMM[1:], 2)
-            IMM = -1 * IMM
-        else:
-            IMM = int(IMM, 2)
+            RS = self.BintoInt(RS)
+        IMM = self.BintoInt(IMM)
         print(RS)
         print(IMM)
         answer = RS - IMM
@@ -538,32 +496,16 @@ class CPU:
 
     def MUL(self, RS, RT):
         if RS != 0 :
-            if RS[0] == '1':
-                RS = int(RS[1:], 2)
-                RS = -1 * RS
-            else:
-                RS = int(RS, 2)
+            RS = self.BintoInt(RS)
         if RT != 0:
-            if RT[0] == '1':
-                RT = int(RT[1:], 2)
-                RT = -1 * RT
-            else:
-                RT = int(RT, 2)
+            RT = self.BintoInt(RT)
         answer = RS * RT
         return answer
 
     def MULI(self, RS, IMM):
         if RS != 0:
-            if RS[0] == '1':
-                RS = int(RS[1:], 2)
-                RS = -1 * RS
-            else:
-                RS = int(RS, 2)
-        if IMM[0] == '1':
-            IMM = int(IMM[1:], 2)
-            IMM = -1 * IMM
-        else:
-            IMM = int(IMM, 2)
+            RS = self.BintoInt(RS)
+        IMM = self.BintoInt(IMM)
         answer = RS * IMM
         return answer
 
@@ -611,11 +553,7 @@ class CPU:
     def LDW(self,RS, IMM):
         print(RS)
         if RS != 0:
-            if RS[0] == '1':
-                RS = int(RS[1:], 2)
-                RS = -1 * RS
-            else:
-                RS = int(RS, 2)
+            RS = self.BintoInt(RS)
         IMM = int(IMM, 2)
         print(RS)
         print(IMM)
@@ -633,11 +571,7 @@ class CPU:
     def STW(self,RS, IMM):
        #print(RS)
         if RS != 0:
-            if RS[0] == '1':
-                RS = int(RS[1:], 2)
-                RS = -1 * RS
-            else:
-                RS = int(RS, 2)
+            RS = self.BintoInt(RS)
         IMM = int(IMM, 2)
         print(RS)
         print(IMM)
@@ -654,11 +588,7 @@ class CPU:
 
     def BZ(self, RS, IMM):
         if RS !=0:
-            if RS[0] == '1':
-                RS = int(RS[1:], 2)
-                RS = -1 * RS
-            else:
-                RS = int(RS, 2)
+            RS = self.BintoInt(RS)
         if IMM !=0:
             IMM = int(IMM, 2)
         if RS == 0:
@@ -756,20 +686,10 @@ class CPU:
             ##only opcodes that return data matter
             return
         if self.pipeline['EX']['Type'] == 'R':
-            Answer = self.pipeline['EX']['Answer']
-            if Answer < 0:
-                Answer = '{0:031b}'.format(Answer)
-                Answer = '1' + Answer[1:]
-            else:
-                Answer = '{0:032b}'.format(Answer)
+            Answer = self.inttoBin(self.pipeline['EX']['Answer'])
             self.buffReg[self.pipeline['EX']['RD']] = Answer
         else:
-            Answer = self.pipeline['EX']['Answer']
-            if Answer < 0:
-                Answer = '{0:031b}'.format(Answer)
-                Answer = '1' + Answer[1:]
-            else:
-                Answer = '{0:032b}'.format(Answer)
+            Answer = self.inttoBin(self.pipeline['EX']['Answer'])
             self.buffReg[self.pipeline['EX']['RT']]= Answer
 
         
@@ -783,16 +703,44 @@ class CPU:
         if self.pipeline['MEM']['data'] == 'x' or self.pipeline['MEM']['Type'] == 'H':
             return
         if self.pipeline['MEM']['OPCODE'] == 'LDW':
-            Answer = self.pipeline['MEM']['Answer']
-            if Answer < 0:
-                Answer = '{0:031b}'.format(Answer)
-                Answer = '1' + Answer[1:]
-            else:
-                Answer = '{0:032b}'.format(Answer)
+            Answer = self.inttoBin(self.pipeline['MEM']['Answer'])
             self.buffReg[self.pipeline['MEM']['RT']]= Answer
             self.tempRegList.append(self.pipeline['MEM']['RT'])
             return
         return
+
+    def BintoInt(self,binNum):
+        if binNum[0] == '1':
+            newNum = ''
+            for x in range(len(binNum)):
+                if binNum[x] == '0':
+                    newNum = newNum + '1'
+                else:
+                    newNum = newNum + '0'
+            binNum = int(newNum,2)
+            binNum = binNum + 1
+            binNum = binNum * -1
+        else:
+            binNum = int(binNum,2)
+        return binNum
+
+    def inttoBin(self,intNum):
+        if intNum < 0:
+            intNum = '{0:032b}'.format(intNum)
+            intNum =  intNum[1:]
+            newNum = ''
+            for x in range(len(intNum)):
+                if intNum[x] == '0':
+                    newNum = newNum + '1'
+                else:
+                    newNum = newNum + '0'         
+            intNum = int(newNum,2)
+            intNum = intNum + 1
+            Answer = '{0:031b}'.format(intNum)
+            Answer = '1'+Answer
+        else:
+            Answer = '{0:032b}'.format(intNum)
+        return Answer
     #this will be the "main" function basically
     def cycle(self):
         self.cycleC=self.cycleC +1
