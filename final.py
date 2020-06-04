@@ -1,7 +1,11 @@
 import pipeLine as pl 
-import sys, os
 
 fileName = 'final_proj_trace.txt'
+
+
+'''
+First Processor has no forwarding
+'''
 processor = pl.CPU(fileName,'N')
 
 #processor.printData()
@@ -12,6 +16,8 @@ while processor.cycle() != 'H':
     #processor.printData()
     continue
 
+
+print("***********************************************\n\nProcessor 1\nNo Forwarding: \n")
 print("***********************************************\nRegisters: \n")
 processor.printReg()
 print("***********************************************\nFinal Pipeline State: \n")
@@ -28,9 +34,11 @@ print("Stalls: ",processor.stalls)
 print("\nMemChanged: ")
 processor.printMEMchange()
 
-processor2 = pl.CPU(fileName,'Y')
+'''
+Processor 2 Code has forwarding
+'''
 
-#processor2.printData()
+processor2 = pl.CPU(fileName,'Y')
 
 #waiting for halt
 
@@ -38,6 +46,7 @@ while processor2.cycle() != 'H':
     #processor2.printData()
     continue
 
+print("\n\n***********************************************\n\nProcessor 2\nForwarding Enabled: \n")
 print("***********************************************\nRegisters: \n")
 processor2.printReg()
 print("***********************************************\nFinal Pipeline State: \n")
