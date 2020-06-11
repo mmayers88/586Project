@@ -18,6 +18,8 @@ class CPU:
     ConCount = 0
     stalls = 0
     cycleC = 0
+    nop1 = 0
+    nop2 = 0
     instructionList = []
     def __init__(self, fileName, forwarding = 'N'):
         self.FWD = forwarding
@@ -214,14 +216,14 @@ class CPU:
             if self.pipeline['ID']['RS'] == x:
                 self.pipeline['ID']['Stall'] = 'Y'
                 self.stalls = self.stalls + 1
-                #print("STALL")
+                print("STALL")
                 return
         if self.pipeline['ID']['Type'] == 'R' or self.pipeline['ID']['OPCODE'] == 'STW':
             for x in self.destRegList:
                 if self.pipeline['ID']['RT'] == x:
                     self.pipeline['ID']['Stall'] = 'Y'
                     self.stalls = self.stalls + 1
-                    #print("STALL")
+                    print("STALL")
                     return
         self.pipeline['ID']['Stall'] = 'N'
         if self.pipeline['ID']['Type'] == 'R':
@@ -421,6 +423,11 @@ class CPU:
     #write back to register
     def WB(self):
         if self.pipeline['WB']['data'] == 'x':
+            if self.pipeline['WB']['OPCODE'] == 'NOP1':
+                self.nop1 = self.nop1 +1
+            if self.pipeline['WB']['OPCODE'] == 'NOP2':
+                self.nop1 = self.nop1 - 1
+                self.nop2 = self.nop2 +1 
             return
         if self.pipeline['WB']['Type'] == 'H':
             return 'H'
@@ -559,6 +566,7 @@ class CPU:
        #print(RS)
        #print(IMM)
         Address = RS + IMM
+        '''
         if Address < 0:
                 Answer = '{0:015b}'.format(Address)
                 Answer = '1' + Answer[1:]
@@ -567,6 +575,8 @@ class CPU:
         if len(Answer) > 16:
             cut = len(Answer)-16
             Answer = Answer[cut:]
+        '''
+        Answer = self.inttoBin(Address)
         return Answer
 
     def STW(self,RS, IMM):
@@ -577,6 +587,7 @@ class CPU:
        #print(RS)
        #print(IMM)
         Address = RS + IMM
+        '''
         if Address < 0:
                 Answer = '{0:015b}'.format(Address)
                 Answer = '1' + Answer[1:]
@@ -585,6 +596,8 @@ class CPU:
         if len(Answer) > 16:
             cut = len(Answer)-16
             Answer = Answer[cut:]
+        '''
+        Answer = self.inttoBin(Address)
         return Answer
 
     def BZ(self, RS, IMM):
@@ -771,7 +784,10 @@ class CPU:
         self.pipeline['WB'] = self.pipeline['MEM']
         self.pipeline['MEM'] = self.pipeline['EX']
         if self.pipeline['ID']['Stall'] != 'N' and self.pipeline['ID']['Stall'] != 'F':
-            self.pipeline['EX'] = {'data': 'x', 'Type': 'x', 'OPCODE':'NOP', 'RS': 'x', 'RT': 'x', 'RD': 'x', 'IMM':'x', 'Answer': 'x',  'Stall': 'N'}
+            if self.pipeline['MEM']['OPCODE'] == 'NOP1':
+                self.pipeline['EX'] = {'data': 'x', 'Type': 'x', 'OPCODE':'NOP2', 'RS': 'x', 'RT': 'x', 'RD': 'x', 'IMM':'x', 'Answer': 'x',  'Stall': 'N'}
+            else:
+                self.pipeline['EX'] = {'data': 'x', 'Type': 'x', 'OPCODE':'NOP1', 'RS': 'x', 'RT': 'x', 'RD': 'x', 'IMM':'x', 'Answer': 'x',  'Stall': 'N'}
             return
         self.pipeline['EX'] = self.pipeline['ID']
         self.pipeline['ID'] = self.pipeline['IF']

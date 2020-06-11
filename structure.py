@@ -26,7 +26,7 @@ processor = pl.CPU(fileName,forwarding)
 #waiting for halt
 
 while processor.cycle() != 'H':
-    #processor.printData()
+    processor.printData()
     continue
 
 print("***********************************************\nRegisters: \n")
@@ -41,6 +41,9 @@ print("Logical Instructions: ",processor.LogCount)
 print("Memory Access Instructions: ",processor.MemCount)
 print("Control Flow Instructions: ",processor.ConCount)
 print("Stalls: ",processor.stalls)
+print("Cycles:", processor.cycleC)
+print("Nop1",processor.nop1)
+print("Nop2",processor.nop2)
 
 print("\nMemChanged: ")
 processor.printMEMchange()
