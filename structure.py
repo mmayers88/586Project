@@ -26,7 +26,7 @@ processor = pl.CPU(fileName,forwarding)
 #waiting for halt
 
 while processor.cycle() != 'H':
-    processor.printData()
+    #processor.printData()
     continue
 
 print("***********************************************\nRegisters: \n")

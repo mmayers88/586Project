@@ -27,8 +27,6 @@ class CPU:
         self.fileName = open(fileName, 'r')
         self.memory = self.fileName.readlines()
         self.fileName2 = open("out.txt", 'w')
-        #first IF
-        #self.IF()
         return      
     def printReg(self):
         for x in range(32):
@@ -50,13 +48,8 @@ class CPU:
     def printData(self):
         printPC = self.PC << 2
         print("PC: ",printPC)
-        #print("Register Contents: ")
-        #self.printReg()
-        #print("Registers buff: ", self.tempRegList)
-        #print("Taken Registers: ",self.destRegList)
         for stage in self.pipeline:
             print(self.pipeline[stage])
-        #print("Cycle: ",self.cycleC)
         return
     
     def showMEM(self):
@@ -71,11 +64,6 @@ class CPU:
         bina = "{0:032b}".format(int(self.memory[self.PC],16))
         #hexadecimal
         hexa = hex(inte)
-        #print(hexa)
-        #string
-        #print(self.memory[self.PC])
-        #saving binary to pipeline
-        #print(self.pipeline['IF']['data'])
         self.pipeline['IF']['data'] = bina
         if self.pipeline['IF']['data'] == '00000000000000000000000000000000':
             self.pipeline['IF'] = {'data': 'x', 'Type': 'x', 'OPCODE':'x', 'RS': 'x', 'RT': 'x', 'RD': 'x', 'IMM':'x', 'Answer': 'x',  'Stall': 'N'}
@@ -99,8 +87,6 @@ class CPU:
         self.pipeline['ID']['RT'] = int(RT,2)
         RD = ADDr[16:21]
         self.pipeline['ID']['RD']= int(RD,2)
-        #print(ADDr)
-        #print(RS, RT, RD)
         return
     def decode(self,opInt):
         if opInt == 17:
@@ -216,22 +202,20 @@ class CPU:
             if self.pipeline['ID']['RS'] == x:
                 self.pipeline['ID']['Stall'] = 'Y'
                 self.stalls = self.stalls + 1
-                print("STALL")
+                #print("STALL")
                 return
         if self.pipeline['ID']['Type'] == 'R' or self.pipeline['ID']['OPCODE'] == 'STW':
             for x in self.destRegList:
                 if self.pipeline['ID']['RT'] == x:
                     self.pipeline['ID']['Stall'] = 'Y'
                     self.stalls = self.stalls + 1
-                    print("STALL")
+                    #print("STALL")
                     return
         self.pipeline['ID']['Stall'] = 'N'
         if self.pipeline['ID']['Type'] == 'R':
             self.destRegList.append(self.pipeline['ID']['RD'])
         if self.pipeline['ID']['OPCODE'][-1] == 'I' or self.pipeline['ID']['OPCODE'] == 'LDW':
             self.destRegList.append(self.pipeline['ID']['RT'])
-        #if it is, stall
-        #print(self.pipeline['ID'])
         return
 
     #execute Instruction
@@ -287,7 +271,6 @@ class CPU:
                 return
             if self.pipeline['EX']['OPCODE'] == 'JR':
                 self.JR(RS)
-               #print(self.PC)
                 return
 
         if self.pipeline['EX']['Type'] == 'R':
@@ -401,19 +384,11 @@ class CPU:
             return
         #do load or store
         Address = int(self.pipeline['MEM']['Answer'],2)
-        #print ("Address", Address)
         Address = Address >> 2
-       #print("Line: ", Address)
         if self.pipeline['MEM']['OPCODE'] == 'LDW':
-           #print("Do Load")
-           #print(self.pipeline['MEM'])
             bina = "{0:032b}".format(int(self.memory[Address],16))
-           #print("Load Data: ",bina)
             self.pipeline['MEM']['Answer'] = int(bina,2)
         else:
-           #print("Do Store")
-            #the data below will need to be written back to memory
-           #print("Data Store: ", "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)))
             self.memory[Address] = "{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)) + '\n'
             storeBack = (Address << 2,"{0:08X}".format(int(self.Reg[self.pipeline['MEM']['RT']], 2)))
             self.storeList.append(storeBack)
@@ -477,10 +452,7 @@ class CPU:
         if RS != 0:
             RS = self.BintoInt(RS)
         IMM = self.BintoInt(IMM)
-       #print(RS)
-       #print(IMM)
         answer = RS + IMM
-       #print("Answer: ", answer)
         return answer
 
     def SUB(self, RS, RT):
@@ -488,8 +460,6 @@ class CPU:
             RS = self.BintoInt(RS)
         if RT != 0:
             RT = self.BintoInt(RT)
-       #print(RS)
-       #print(RT)
         answer = RS - RT
         return answer
 
@@ -497,8 +467,6 @@ class CPU:
         if RS != 0:
             RS = self.BintoInt(RS)
         IMM = self.BintoInt(IMM)
-       #print(RS)
-       #print(IMM)
         answer = RS - IMM
         return answer
 
@@ -563,8 +531,6 @@ class CPU:
         if RS != 0:
             RS = self.BintoInt(RS)
         IMM = self.BintoInt(IMM)
-       #print(RS)
-       #print(IMM)
         Address = RS + IMM
         '''
         if Address < 0:
@@ -584,19 +550,7 @@ class CPU:
         if RS != 0:
             RS = self.BintoInt(RS)
         IMM = self.BintoInt(IMM)
-       #print(RS)
-       #print(IMM)
         Address = RS + IMM
-        '''
-        if Address < 0:
-                Answer = '{0:015b}'.format(Address)
-                Answer = '1' + Answer[1:]
-        else:
-            Answer = '{0:016b}'.format(Address)
-        if len(Answer) > 16:
-            cut = len(Answer)-16
-            Answer = Answer[cut:]
-        '''
         Answer = self.inttoBin(Address)
         return Answer
 
@@ -606,13 +560,7 @@ class CPU:
         if IMM !=0:
             IMM = self.BintoInt(IMM)
         if RS == 0:
-            #print ("Address", Address)
-            #print("PC", self.PC)
-           #print(IMM)
             self.PC = self.PC - 3 + IMM
-            #print ("PC from IMM", self.PC)
-            #Address = "{0:032b}".format(int(Address, 16))
-            #self.PC = (Address -1) << 2
             self.flush()
         return
 
