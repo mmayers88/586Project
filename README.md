@@ -1,6 +1,6 @@
 # 586Project
 
-##This belongs to Mikhail, Kim and Bader
+## This belongs to Mikhail, Kim and Bader
 
 
 **example run:**
